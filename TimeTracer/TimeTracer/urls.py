@@ -22,5 +22,5 @@ from register.views import register
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', home),
-    path('log/', register)
+    path('', register)
 ]
