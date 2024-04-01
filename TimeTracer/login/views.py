@@ -1,10 +1,8 @@
 import logging
-
 from django.shortcuts import render, redirect
 from register.forms import UserForm
 from register.models import users
-
-logger = logging.getLogger(__name__)
+import hashlib
 
 def login_views(request):
     error = ''
@@ -13,6 +11,7 @@ def login_views(request):
         if form.is_valid():
             name = request.POST.get('name')
             password = request.POST.get('password')
+            password = hashlib.sha256(password.encode()).hexdigest()
             user = users.objects.filter(name=name).first()
             if user is not None and user.password == password:
                 return redirect('home/')
@@ -20,6 +19,7 @@ def login_views(request):
                 error = 'Неверное Имя или Пароль'
     else:
         form = UserForm()
+        
     data = {
         'error': error,
         'form': form
