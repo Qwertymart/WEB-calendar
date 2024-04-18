@@ -2,8 +2,9 @@ from django.db import models
 
 
 class users(models.Model):
-    name = models.CharField(max_length=50)
-    password = models.CharField(max_length=50)
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=50, verbose_name='Имя')
+    password = models.CharField(max_length=50, verbose_name='Пароль')
 
     class Meta:
         verbose_name = "User"
@@ -13,9 +14,4 @@ class users(models.Model):
         return self.name
 
 
-class events(models.Model):
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=200)
 
-    def __str__(self):
-        return self.name
