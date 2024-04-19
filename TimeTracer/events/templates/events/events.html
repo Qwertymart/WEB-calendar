@@ -28,40 +28,6 @@
         <button type="submit">Add Event</button>
     </form>
 
-    <h2>Выбор разметки:</h2>
-    <ul>
-        <li><a href="?layout=week">Неделя</a></li>
-        <li><a href="?layout=month">Месяц</a></li>
-    </ul>
-    <ul>
-        <li><a href="?week=week">Тут выбор Недели</a></li>
-        <li><a href="?month=month">Тут выбор месяца</a></li>
-    </ul>
-
-    {% if current_month and current_year %}
-    <h2>{{ current_year }} / {{ current_month }}</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Пн</th>
-                <th>Вт</th>
-                <th>Ср</th>
-                <th>Чт</th>
-                <th>Пт</th>
-                <th>Сб</th>
-                <th>Вс</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                {% for day in days_of_month %}
-                <td>{{ day }}</td>
-                {% endfor %}
-            </tr>
-        </tbody>
-    </table>
-    {% endif %}
-
     {% for event in events %}
     <div>
         <h3>{{ event.name }}</h3>
