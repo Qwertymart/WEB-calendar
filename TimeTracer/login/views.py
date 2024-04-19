@@ -24,4 +24,4 @@ def login_views(request):
         'error': error,
         'form': form
     }
-    return render(request, 'login/login.html', data)
+    return render(request, 'TimeTracer/login/login.html', data)

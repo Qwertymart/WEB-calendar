@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Event</title>
+</head>
+<body>
+    <h1>Add Event</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="id_name">Name:</label>
+        {{ form.name }}
+        <br>
+        <label for="id_date_start">Start Date:</label>
+        <input type="date" id="id_date_start" name="date_start">
+        <br>
+        <label for="id_date_finish">Finish Date:</label>
+        <input type="date" id="id_date_finish" name="date_finish">
+        <br>
+        <label for="id_description">Description:</label>
+        {{ form.description }}
+        <br>
+        <label for="id_participants">Participants:</label>
+        {{ form.participants }}
+        <br>
+        <button type="submit" name="my_button">Нажми меня</button>  <!-- Перемещаем кнопку внутрь формы -->
+        <button type="submit">Add Event</button>
+    </form>
+
+    <h2>Выбор разметки:</h2>
+    <ul>
+        <li><a href="?layout=week">Неделя</a></li>
+        <li><a href="?layout=month">Месяц</a></li>
+    </ul>
+    <ul>
+        <li><a href="?week=week">Тут выбор Недели</a></li>
+        <li><a href="?month=month">Тут выбор месяца</a></li>
+    </ul>
+
+    {% if current_month and current_year %}
+    <h2>{{ current_year }} / {{ current_month }}</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Пн</th>
+                <th>Вт</th>
+                <th>Ср</th>
+                <th>Чт</th>
+                <th>Пт</th>
+                <th>Сб</th>
+                <th>Вс</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for day in days_of_month %}
+                <td>{{ day }}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% for event in events %}
+    <div>
+        <h3>{{ event.name }}</h3>
+        <p><strong>Start Date:</strong> {{ event.date_start }}</p>
+        <p><strong>Finish Date:</strong> {{ event.date_finish }}</p>
+        <p><strong>Description:</strong> {{ event.description }}</p>
+        <p><strong>Participants:</strong>
+            {% for participant in event.participants.all %}
+                {{ participant.username }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+    </div>
+    {% endfor %}
+</body>
+</html>
