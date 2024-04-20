@@ -23,19 +23,9 @@ def events(request):
 
     selected_month = int(request.GET.get('selected_month', current_month))
 
-    # Calculate the number of days in the selected month
-    _, num_days = monthrange(current_year, selected_month)
+    first_weekday, num_days = monthrange(current_year, selected_month)
 
-    # Get the first day of the selected month
-    first_day = datetime(current_year, selected_month, 1)
-
-    # Calculate the weekday of the first day (0 - Monday, 6 - Sunday)
-    first_weekday = first_day.weekday()
-
-    # Calculate the number of days to pad before the first day of the month in the calendar
     num_padding_days = (first_weekday) % 7
-
-    # Generate a list of days for the selected month
     days_of_month = []
     week = []
     for i in range(num_padding_days):
@@ -50,7 +40,6 @@ def events(request):
             week.append(None)
         days_of_month.append(week)
 
-    # Retrieve events for the selected month
     events = Event.objects.filter(date_start__year=current_year, date_start__month=selected_month)
 
     return render(request, 'events/events.html',
