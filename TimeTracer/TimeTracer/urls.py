@@ -26,5 +26,5 @@ urlpatterns = [
     path('home/', home, name='home'),
     path('', register),
     path('login/', login_views),
-    path('events/', events),
+    path('events/', events, name='events'),
 ]
