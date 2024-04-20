@@ -43,5 +43,5 @@ def events(request):
     events = Event.objects.filter(date_start__year=current_year, date_start__month=selected_month)
 
     return render(request, 'events/events.html',
-                  {'events': events, 'current_month': current_month, 'current_year': current_year,
+                  {'form': form, 'events': events, 'current_month': current_month, 'current_year': current_year,
                    'days_of_month': days_of_month})

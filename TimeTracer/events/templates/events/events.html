@@ -11,7 +11,7 @@
     <form method="POST">
         {% csrf_token %}
         <label for="id_name">Name:</label>
-        {{ form.name }}
+            {{ form.name }}
         <br>
         <label for="id_date_start">Start Date:</label>
         <input type="date" id="id_date_start" name="date_start">
@@ -27,6 +27,7 @@
         <br>
         <button type="submit">Add Event</button>
     </form>
+
 
     <h2>Select Month:</h2>
     <form method="GET">
