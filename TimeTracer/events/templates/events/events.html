@@ -1,9 +1,10 @@
+<!-- events.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Event</title>
+    <title>Events</title>
 </head>
 <body>
     <h1>Add Event</h1>
@@ -24,19 +25,27 @@
         <label for="id_participants">Participants:</label>
         {{ form.participants }}
         <br>
-        <button type="submit" name="my_button">Нажми меня</button>  <!-- Перемещаем кнопку внутрь формы -->
         <button type="submit">Add Event</button>
     </form>
 
-    <h2>Выбор разметки:</h2>
-    <ul>
-        <li><a href="?layout=week">Неделя</a></li>
-        <li><a href="?layout=month">Месяц</a></li>
-    </ul>
-    <ul>
-        <li><a href="?week=week">Тут выбор Недели</a></li>
-        <li><a href="?month=month">Тут выбор месяца</a></li>
-    </ul>
+    <h2>Select Month:</h2>
+    <form method="GET">
+        <select name="selected_month">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select>
+        <input type="submit" value="Go">
+    </form>
 
     {% if current_month and current_year %}
     <h2>{{ current_year }} / {{ current_month }}</h2>
@@ -53,11 +62,17 @@
             </tr>
         </thead>
         <tbody>
+            {% for week in days_of_month %}
             <tr>
-                {% for day in days_of_month %}
-                <td>{{ day }}</td>
+                {% for day in week %}
+                    <td>
+                        {% if day %}
+                            {{ day.day }}
+                        {% endif %}
+                    </td>
                 {% endfor %}
             </tr>
+            {% endfor %}
         </tbody>
     </table>
     {% endif %}
