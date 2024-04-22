@@ -111,6 +111,11 @@
                 {{ participant.username }}{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </p>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="delete_event_id" value="{{ event.id }}">
+            <button type="submit">Delete</button>
+        </form>
     </div>
     {% endfor %}
 </body>

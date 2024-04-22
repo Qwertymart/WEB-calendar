@@ -10,6 +10,11 @@ def events(request):
     if request.method == 'POST':
         if 'my_button' in request.POST:
             return redirect('home')
+        elif 'delete_event_id' in request.POST:  # Проверяем, было ли отправлено сообщение об удалении
+            event_id = request.POST.get('delete_event_id')
+            event = Event.objects.get(id=event_id)
+            event.delete()  # Удаляем событие
+            return redirect('/events')  # Перенаправляем обратно на страницу событий после удаления
         else:
             form = EventForm(request.POST)
             if form.is_valid():
