@@ -4,4 +4,4 @@ import datetime
 
 def home(request):
     date = datetime.datetime.now().date()
-    return render(request, 'home.html')
+    return render(request, 'home_page/home.html')

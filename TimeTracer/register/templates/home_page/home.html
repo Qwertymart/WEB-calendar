@@ -1,39 +1,18 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<!--meta-данные-->
+	<title> Homepage</title>
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title> TT</title>
-</head>
-<body>
-<style>
-	body{
-		background:url({% static 'register/img/hom.jpg' %});
-		background-size: cover;
-		}
-button{
-height:50px;
-wight:100px;
-}
-.block{
-border-radius:25px;
-background-color:#C0C0C0;
-width:620px;
-margin-left:55px;
-margin-top:165px;
-height:580px;
-}
-.fo{
-	position:fixed;
-	top:20px;
-	right:20px;}
-.but{
-	width:150px;
-	height:40px;
-	margin-bottom:10px;}
-</style>
+	<!--style-->
+	<link rel="stylesheet" href="{% static 'home_page/css/home_style.css' %}">
 
+</head>
+
+<body>
 <div class="fo">
 		<form action="http://127.0.0.1:8000/">
 			<button class="but">Зарегистрироваться</button>
@@ -47,9 +26,11 @@ height:580px;
 <center>
 <img align="middle" vspace="60px" src="{% static 'register/img/photo_2024-03-29_21-03-46.jpg' %}" alt="Our pict" width="250px">
 </center>
+
 <p style="font-size:32px" align="center"> Transforming chaos into order</p>
 <p style="font-size:32px" align="center"> every day, every week, every month</p>
 <p style="font-size:36px" align="center"><b> TimeTracer</b></p>
 </div>
+
 </body>
 </html>

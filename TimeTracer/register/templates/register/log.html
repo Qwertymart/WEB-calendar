@@ -2,12 +2,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!--meta-данные-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация</title>
-</head>
-<body>
-<style>
+    <!--style-->
+    <style>
     body{
 	background-color:#2F303A;
     }
@@ -51,6 +51,11 @@
     }
 }
 </style>
+
+</head>
+
+
+<body>
     <div class="parent">
 	<div class='block'>
 		<img vspace="60px" hspace="50px" src="{% static 'register/img/photo_2024-03-29_21-03-46.jpg' %}" alt="Our pict" width="200px">
@@ -58,15 +63,18 @@
 	<form action="" method="post">
         <div class="field">
             <label for="name">Имя:</label>
-            <input type="text" id="name" name="name" required>
+            <input type="text" id="name" name="name" required
+            placeholder="username">
         </div>
         <div class="field">
             <label for="password">Пароль:</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password" required
+            placeholder="password">
         </div>
         <div class="field">
             <label for="password">Повторите пароль:</label>
-            <input type="password" id="password_repeat" name="password_repeat" required>
+            <input type="password" id="password_repeat" name="password_repeat" required
+            placeholder="password">
         </div>
 
         <button style="background-color:#A9A9A9; color:#000000" type="submit" >Зарегистрироваться</button>
@@ -74,5 +82,6 @@
 
 </div>
 </div>
+
 </body>
 </html>
