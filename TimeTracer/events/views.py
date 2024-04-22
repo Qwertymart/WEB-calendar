@@ -22,8 +22,9 @@ def events(request):
     current_month = timezone.now().month
 
     selected_month = int(request.GET.get('selected_month', current_month))
+    selected_year = int(request.GET.get('selected_year', current_year))
 
-    first_weekday, num_days = monthrange(current_year, selected_month)
+    first_weekday, num_days = monthrange(selected_year, selected_month)
 
     num_padding_days = (first_weekday) % 7
     days_of_month = []
@@ -31,7 +32,7 @@ def events(request):
     for i in range(num_padding_days):
         week.append(None)
     for day in range(1, num_days + 1):
-        week.append(datetime(current_year, selected_month, day))
+        week.append(datetime(selected_year, selected_month, day))
         if len(week) == 7:
             days_of_month.append(week)
             week = []
@@ -40,7 +41,7 @@ def events(request):
             week.append(None)
         days_of_month.append(week)
 
-    events = Event.objects.filter(date_start__year=current_year, date_start__month=selected_month)
+    events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month)
 
     return render(request, 'events/events.html',
                   {'form': form, 'events': events, 'current_month': current_month, 'current_year': current_year,

@@ -14,7 +14,7 @@ def login_views(request):
             password = hashlib.sha256(password.encode()).hexdigest()
             user = users.objects.filter(name=name).first()
             if user is not None and user.password == password:
-                return redirect('home/')
+                return redirect('events')
             else:
                 error = 'Неверное Имя или Пароль'
     else:
@@ -24,4 +24,4 @@ def login_views(request):
         'error': error,
         'form': form
     }
-    return render(request, 'TimeTracer/login/login.html', data)
+    return render(request, 'login/login.html', data)
