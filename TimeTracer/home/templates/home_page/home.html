@@ -1,0 +1,39 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!--meta-данные-->
+	<title> Homepage</title>
+	<meta charset="UTF-8">
+	<!--style-->
+	<link rel="stylesheet" href="{% static 'home_page/css/home.css' %}">
+
+</head>
+
+<body>
+
+<div id="slogan">
+	<img id="logo" src="{% static 'home_page/images/Logo.png' %}">
+
+	<div id="inside text">
+		<p> Transforming chaos into order</p>
+		<p> every day, every week, every month</p>
+		<div id="undertext">
+			<p>  TimeTracer </p>
+		</div>
+	</div>
+
+</div>
+
+<img id="big_pict" src="{% static 'home_page/images/human_sitting.png' %}">
+
+
+<div class="refers">
+	<a href="http://127.0.0.1:8000/" class="link">Register</a>
+	<a href="http://127.0.0.1:8000/login" class="link">Entrance</a>
+</div>
+
+
+</body>
+</html>
