@@ -1,10 +1,11 @@
 # views.py
 from django.shortcuts import render, redirect
-from .forms import EventForm
+from .forms import EventForm, ViewTypeForm
 from .models import events as Event
 from django.utils import timezone
 from datetime import datetime
 from calendar import monthrange
+
 
 def events(request):
     if request.method == 'POST':
@@ -21,6 +22,18 @@ def events(request):
                 form.save()
                 return redirect('/events')
     else:
+        if 'view_button' in request.GET:  # Если нажата кнопка submit при выборе отображения
+            context = {}
+            form = ViewTypeForm()
+            context['form'] = form
+            temp = request.GET.get('view type', None)  # Получаем, что выбрали
+            if temp == 'month':
+                form = EventForm()
+                return redirect('events')  # Остаемся в той же вкладке
+            elif temp == 'week':
+                return redirect('week')  # Летим в week, чтобы уже работать в функции week на новой странице
+            elif temp == 'day':
+                return redirect('day')  # Летим в day, чтобы уже работать в функции day на новой странице
         form = EventForm()
 
     current_year = timezone.now().year
@@ -51,3 +64,11 @@ def events(request):
     return render(request, 'events/events.html',
                   {'form': form, 'events': events, 'current_month': current_month, 'current_year': current_year,
                    'days_of_month': days_of_month})
+
+
+def week(request):
+    return render(request, 'events/week.html')
+
+
+def day(request):
+    return render(request, 'events/day.html')

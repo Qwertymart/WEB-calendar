@@ -19,7 +19,7 @@ from django.urls import path
 from .views import home
 from register.views import register
 from login.views import login_views
-from events.views import events
+from events.views import events, week, day
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,4 +27,6 @@ urlpatterns = [
     path('', register),
     path('login/', login_views, name='login'),
     path('events/', events, name='events'),
+    path('events/week/', week, name='week'),
+    path('events/day/', day, name='day'),
 ]
