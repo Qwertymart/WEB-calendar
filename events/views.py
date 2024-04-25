@@ -19,7 +19,9 @@ def events(request):
         else:
             form = EventForm(request.POST)
             if form.is_valid():
-                form.save()
+                event = form.save(commit=False)
+                event.user = request.user
+                event.save()
                 return redirect('/events')
     else:
         if 'view_button' in request.GET:  # Если нажата кнопка submit при выборе отображения
@@ -59,7 +61,7 @@ def events(request):
             week.append(None)
         days_of_month.append(week)
 
-    events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month)
+    events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month, user=request.user)
 
     return render(request, 'events/events.html',
                   {'form': form, 'events': events, 'current_month': current_month, 'current_year': current_year,
