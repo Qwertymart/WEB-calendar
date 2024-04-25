@@ -6,7 +6,6 @@ from django.utils import timezone
 from datetime import datetime
 from calendar import monthrange
 
-
 def events(request):
     if request.method == 'POST':
         if 'my_button' in request.POST:
