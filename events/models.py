@@ -1,15 +1,14 @@
 from django.db import models
-from register.models import users
 from django.contrib.auth.models import User
 
 class events(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events_created')
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, verbose_name='Имя')
     date_start = models.DateTimeField(verbose_name='Начало события')
     date_finish = models.DateTimeField(verbose_name='Окончание события', blank=True, null=True)
     description = models.CharField(max_length=200, verbose_name='Описание')
-    participants = models.ManyToManyField(users, verbose_name='Соучастники')
+    participants = models.ManyToManyField(User, verbose_name='Соучастники')
 
     class Meta:
         verbose_name = "Event"
