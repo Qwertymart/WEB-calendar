@@ -18,7 +18,18 @@ TYPES = (
     ('week', 'week'),
     ('day', 'day')
 )
+WEEKS = (
+    ('1', '1'),
+    ('2', '2'),
+    ('3', '3'),
+    ('4', '4'),
+    ('5', '5')
+)
 
 
 class ViewTypeForm(forms.Form):
     type = forms.ChoiceField(choices=TYPES)
+
+
+class WeekNumberForm(forms.Form):
+    number_of_week = forms.ChoiceField(choices=WEEKS)
