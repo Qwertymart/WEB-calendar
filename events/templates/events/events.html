@@ -119,9 +119,7 @@
     <p><strong>Finish Date:</strong> {{ event.date_finish }}</p>
     <p><strong>Description:</strong> {{ event.description }}</p>
     <p><strong>Participants:</strong>
-        {% for participant in event.participants.all %}
-        {{ participant.username }}{% if not forloop.last %}, {% endif %}
-        {% endfor %}
+
     </p>
     <form method="POST">
         {% csrf_token %}
