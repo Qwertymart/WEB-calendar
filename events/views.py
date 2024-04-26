@@ -114,9 +114,10 @@ def week(request):
         else:
             current_year = int(selected_year)
         selected_week = int(request.GET.get('number_of_week', '1'))
-    for element in YEARS:
-        if element[0] == str(current_year):
-            name = element
+    for value in YEARS:
+        if value[1] == str(timezone.now().year):
+            name = value
+
     current_year = int(YEARS[YEARS.index(name)][1])
     first_weekday, num_days = monthrange(current_year, current_month)
     num_padding_days = (first_weekday) % 7
@@ -140,7 +141,7 @@ def week(request):
     for number in range(week_counter):
         options.append({'value': f'{number + 1}', 'label': f'{number + 1}'})
 
-    # events = Event.objects.filter(date_start__year=current_year, date_start__month=current_month, user=request.user)
+    events = Event.objects.filter(date_start__year=current_year, date_start__month=current_month, user=request.user)
 
     return render(request, 'events/week.html',
                   {'form': form, 'events': events, 'current_month': current_month,
