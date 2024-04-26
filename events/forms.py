@@ -73,3 +73,13 @@ class MonthSelect(forms.Form):
 
 class YearSelect(forms.Form):
     selected_year = forms.ChoiceField(choices=YEARS)
+
+
+class DayView(forms.Form):
+    day_select_form = forms.DateTimeField()
+    widget = forms.DateInput(
+        attrs={
+            'class': 'form_control',
+            'type': 'date'
+        }
+    )
