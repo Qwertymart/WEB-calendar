@@ -1,6 +1,6 @@
 # views.py
 from django.shortcuts import render, redirect
-from .forms import EventForm, ViewTypeForm, WeekNumberForm
+from .forms import EventForm, ViewTypeForm, YEARS, MONTHS
 from .models import events as Event
 from django.utils import timezone
 from datetime import datetime
@@ -91,7 +91,7 @@ def week(request):
             context['form'] = form
             temp = request.GET.get('view type', None)  # Получаем, что выбрали
             if temp == 'month':
-                form = EventForm()
+                # form = EventForm()
                 return redirect('events')  # Остаемся в той же вкладке
             elif temp == 'week':
                 return redirect('week')  # Летим в week, чтобы уже работать в функции week на новой странице
@@ -99,39 +99,53 @@ def week(request):
                 return redirect('day')  # Летим в day, чтобы уже работать в функции day на новой странице
 
         form = EventForm()
-
-    current_year = timezone.now().year
     current_month = timezone.now().month
-
-    selected_month = int(request.GET.get('selected_month', current_month))
-    selected_year = int(request.GET.get('selected_year', current_year))
-
-    first_weekday, num_days = monthrange(selected_year, selected_month)
-    num_padding_days = first_weekday % 7
+    current_year = timezone.now().year
+    selected_week = 1
+    if 'week_to_show' in request.GET:
+        selected_month = request.GET.get('selected_month', None)
+        selected_year = request.GET.get('selected_year', None)
+        if selected_month is None:
+            current_month = timezone.now().month
+        else:
+            current_month = int(selected_month)
+        if selected_year is None:
+            current_year = timezone.now().year
+        else:
+            current_year = int(selected_year)
+        selected_week = int(request.GET.get('number_of_week', '1'))
+    for element in YEARS:
+        if element[0] == str(current_year):
+            name = element
+    current_year = int(YEARS[YEARS.index(name)][1])
+    first_weekday, num_days = monthrange(current_year, current_month)
+    num_padding_days = (first_weekday) % 7
     days_of_month = []
-    week = []
+    week_of_month = []
     for i in range(num_padding_days):
-        week.append(None)
-    for day in range(1, num_days + 1):
-        week.append(datetime(selected_year, selected_month, day))
-        if len(week) == 7:
-            days_of_month.append(week)
-            week = []
-    if week:
-        while len(week) < 7:
-            week.append(None)
-        days_of_month.append(week)
-    selected_week = int(request.GET.get('number_of_week', '1'))
+        week_of_month.append(None)
+    for day_of_month in range(1, num_days + 1):
+        week_of_month.append(datetime(current_year, current_month, day_of_month))
+        if len(week_of_month) == 7:
+            days_of_month.append(week_of_month)
+            week_of_month = []
+    if week_of_month:
+        while len(week_of_month) < 7:
+            week_of_month.append(None)
+        days_of_month.append(week_of_month)
+
     current_week = days_of_month[selected_week - 1]
     week_counter = len(days_of_month)
     options = []
     for number in range(week_counter):
-        options.append({'value': f'{number+1}', 'label': f'{number+1}'})
+        options.append({'value': f'{number + 1}', 'label': f'{number + 1}'})
 
-    #events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month, user=request.user)
+    # events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month, user=request.user)
+
 
     return render(request, 'events/week.html',
-                  {'form': form, 'events': events, 'current_month': current_month, 'current_year': current_year,
+                  {'form': form, 'events': events, 'current_month': current_month,
+                   'current_year': YEARS[YEARS.index(name)][1],
                    'days_of_month': days_of_month, 'current_week': current_week, 'options': options})
 
 
