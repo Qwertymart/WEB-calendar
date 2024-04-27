@@ -39,9 +39,13 @@ def events(request):
 
     current_year = timezone.now().year
     current_month = timezone.now().month
+    current_day = timezone.now().day
 
     selected_month = int(request.GET.get('selected_month', current_month))
     selected_year = int(request.GET.get('selected_year', current_year))
+    month = ['ЯНВАРЬ', 'ФЕВРАЛЬ', 'МАРТ', 'АПРЕЛЬ', 'МАЙ', 'ИЮНЬ', 'ИЮЛЬ', 'АВГУСТ', 'СЕНТЯБРЬ', 'ОКТЯБРЬ', 'НОЯБРЬ', 'ДЕКАБРЬ']
+    select_month = month[selected_month - 1]
+    cur_month = month[current_month - 1]
 
     first_weekday, num_days = monthrange(selected_year, selected_month)
 
@@ -64,7 +68,8 @@ def events(request):
 
     return render(request, 'events/events.html',
                   {'form': form, 'events': events, 'current_month': current_month, 'current_year': current_year,
-                   'days_of_month': days_of_month})
+                   'days_of_month': days_of_month, 'selected_month': selected_month, 'selected_year': selected_year,
+                   'current_day': current_day, 'select_month': select_month, 'cur_month': cur_month})
 
 
 def week(request):
