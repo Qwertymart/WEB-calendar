@@ -56,13 +56,9 @@
             margin-right: 50px;
             width: 300px;
         }
-
-
-
     </style>
 </head>
 <body>
-
 <!--
 
 <h2>Select view type</h2>
@@ -76,26 +72,6 @@
     </select>
     <input type = "submit" value = "Submit" name="view_button">
 </form>
-
-<form method="POST">
-        {% csrf_token %}
-        <label for="id_name">Name:</label>
-        {{ form.name }}
-        <br>
-        <label for="id_date_start">Start Date:</label>
-        <input type="date" id="id_date_start" name="date_start">
-        <br>
-        <label for="id_date_finish">Finish Date:</label>
-        <input type="date" id="id_date_finish" name="date_finish">
-        <br>
-        <label for="id_description">Description:</label>
-        {{ form.description }}
-        <br>
-        <label for="id_participants">Participants:</label>
-        {{ form.participants }}
-        <br>
-        <button type="submit">Добавить</button>
-        </form>
 -->
 <header>
     <div>
@@ -111,27 +87,26 @@
     </div>
 </header>
 <aside>
-
     <form method="GET">
         <h4>Выберите дату:</h4>
-    <select name="selected_year">
-        <option value="2015">2015</option>
-        <option value="2016">2016</option>
-        <option value="2017">2017</option>
-        <option value="2018">2018</option>
-        <option value="2019">2019</option>
-        <option value="2020">2020</option>
-        <option value="2021">2021</option>
-        <option value="2022">2022</option>
-        <option value="2023">2023</option>
-        <option value="2024">2024</option>
-        <option value="2025">2025</option>
-        <option value="2026">2026</option>
-        <option value="2027">2027</option>
-        <option value="2028">2028</option>
-        <option value="2029">2029</option>
-        <option value="2030">2030</option>
-    </select>
+        <select name="selected_year">
+            <option value="2015">2015</option>
+            <option value="2016">2016</option>
+            <option value="2017">2017</option>
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+            <option value="2029">2029</option>
+            <option value="2030">2030</option>
+        </select>
         <select name="selected_month">
             <option value="1">Январь</option>
             <option value="2">Февраль</option>
@@ -148,10 +123,27 @@
         </select>
     <input type="submit" value="Выбрать">
     </form>
-    {% for ev in events %}
+    <!--{% for ev in events %}
         <p>ev.description</p>
-    {% endfor %}
-
+    {% endfor %}-->
+    <form method="POST">
+        {% csrf_token %}
+        <label for="id_name">Name:</label>
+        {{ form.name }}
+        <br>
+        <label for="id_date_start">Start Date:</label>
+        <input type="date" id="id_date_start" name="date_start">
+        <br>
+        <label for="id_date_finish">Finish Date:</label>
+        <input type="date" id="id_date_finish" name="date_finish">
+        <br>
+        <label for="id_description">Description:</label>
+        {{ form.description }}
+        <br>
+        <label for="id_participants">Participants:</label>
+        <br>
+        <button type="submit">Добавить</button>
+    </form>
 </aside>
 <main>
 <table>
@@ -180,7 +172,6 @@
     {% endfor %}
     </tbody>
 </table>
-
 </main>
 <!--
 {% for event in events %}
