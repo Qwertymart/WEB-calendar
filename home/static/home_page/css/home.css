@@ -34,7 +34,7 @@ body {
     width: 70%;
 }
 #line_two{
-    height: 3px;
+    height: 2px;
     width: 55%;
     position: relevant;
     bottom: 15px;
@@ -107,7 +107,7 @@ body {
     cursor: pointer;
 }
 
-#undertext:hover {
+#undertext:hover, .string:hover {
     color: #8E7E14;
     cursor: default;
 }
