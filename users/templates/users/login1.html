@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+</head>
+<body>
+<style>
+    body{
+	background-color:#2F303A;
+    }
+    div{
+	border-radius:30px;
+    }
+    button{
+	height:30px;
+	margin: 15px;}
+    .field{
+	clear:both;
+	text-align:right;
+	line-height:25px;}
+    label{
+	float:left;
+	margin-left:80px;}
+    input{
+	margin-right:100px;}
+    .parent {
+    	width: 100%;
+    	height: 100%;
+    	position: absolute;
+    	top: 0;
+    	left: 0;
+    	overflow: auto;
+   }
+
+    .block {
+    	width: 500px;
+    	height: 600px;
+    	position: absolute;
+    	top: 0;
+    	right: 0;
+    	bottom: 0;
+    	left: 0;
+    	margin: auto;
+	background-color:#FFF;
+	color:#000;
+	text-align:center;
+	float:left;
+    }
+}
+</style>
+    <div class="parent">
+	<div class='block'>
+		<img vspace="40px" hspace="50px" src="{% static 'users/img/photo_2024-03-29_21-03-46.jpg' %}" alt="Our pict" width="200px">
+		<h1> Вход </h1>
+<form method='post'>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button style="background-color:#2F303A; color:#FFF" type="submit" >Войти</button>
+    	</form>
+
+</div>
+</div>
+</body>
+</html>
