@@ -1,11 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Bellefair&family=Chonburi&display=swap');
-
+/*общие настройки*/
 body {
     background: #2f303a;
     margin: 0;
     padding: 0;
 }
 
+/*работа с текстом*/
 #slogan {
     background: #e0e0e0;
     height: 450px;
@@ -26,15 +27,27 @@ body {
     font-size: 30px;
     word-spacing: 2px;
     letter-spacing: 1px;
-    line-height: 40px;
+    line-height: 20px;
 }
 
+#line_one{
+    width: 70%;
+}
+#line_two{
+    height: 3px;
+    width: 55%;
+    position: relevant;
+    bottom: 15px;
+}
+
+/* лого, мб преобразую в класс*/
 #logo {
-    margin: 0 0 10px 0;
+    margin: 5px 0 15px 0;
     height: 35%;
     width: 35%;
 }
 
+/*нижняя надпись TimeTracer*/
 #undertext {
     font-family: "Chonburi", serif;
     font-weight: 400;
@@ -43,9 +56,7 @@ body {
     line-height: 0px;
 
     position: relative;
-    top: 60px;
-
-
+    top: 15px;
 }
 
 #big_pict {
@@ -88,10 +99,15 @@ body {
     width: 50px;
 }
 
-.link:hover {
-
+/*псевдокласс, красящий кнопку при наведении*/
+.link:hover{
     color: #8E7E14;
     text-decoration: underline;
     text-decoration-color: #8E7E14;
     cursor: pointer;
+}
+
+#undertext:hover {
+    color: #8E7E14;
+    cursor: default;
 }
