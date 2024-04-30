@@ -8,7 +8,7 @@ class events(models.Model):
     date_start = models.DateTimeField(verbose_name='Начало события')
     date_finish = models.DateTimeField(verbose_name='Окончание события', blank=True, null=True)
     description = models.CharField(max_length=200, verbose_name='Описание')
-    participants = models.ManyToManyField(User, verbose_name='Соучастники')
+    participants = models.ManyToManyField(User, through='Participant', verbose_name='Соучастники')
 
     class Meta:
         verbose_name = "Event"
@@ -21,3 +21,10 @@ class events(models.Model):
         if self.date_start and not self.date_finish:
             self.date_finish = self.date_start
         super().save(*args, **kwargs)
+
+class Participant(models.Model):
+    event = models.ForeignKey(events, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('event', 'user')
