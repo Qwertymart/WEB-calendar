@@ -12,81 +12,100 @@
         }
         aside{
             background-color:;
-            height:100vh;
-            width:200px;
+            height:200px;
+            width:230px;
             float:left;
-
         }
         header{
-            /*margin-left:45px;*/
-            height:100px;
+            height:120px;
         }
         table {
             border-collapse: collapse;
             background-color:#3F414D;
             border-radius:30px;
+            width:1240px;
         }
-
+        .thead{
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .tbody{
+            overflow-y: auto;
+            height: 690px;;
+        }
+        }
         th, td {
             color:#FFF;
-
         }
         td {
             border: 1px solid black;
-            width: 1000px;
-            height:110px;
+            height:80px;
         }
         th{
             background-color:#2F303A;
-            width: 1000px;
             height:60px;
 
         }
         label{
             color:#000;
         }
-        .shapka{
-
-            font-weight:1000;
-            text-align:left;
+        .week{
+            height:15px;
         }
+        .time{
+            border:none;
+            background-color:#2F303A;
+            width:10px;
 
-        div{
+            padding-right:10px;
+            valign:bottom;
+        }
+        .shapka{
             display: inline-block;
             margin-right: 50px;
             width: 300px;
+            margin-top:-10px;
         }
     </style>
 </head>
 <body>
 <!--
 
-<h2>Select view type</h2>
-<form method="GET">
-    {% csrf_token %}
-    {{ ViewTypeForm }}
-    <select name="view type">
-        <option value="month">month</option>
-        <option value="week">week</option>
-        <option value="day">day</option>
-    </select>
-    <input type = "submit" value = "Submit" name="view_button">
-</form>
+
 -->
 <header>
-    <div>
-    <img src="{% static 'events/img/Timetracer_logo.jpg' %}" alt="pict" width="100px"></div>
-    <div style="text-align:left">
-        {{ select_month }}
-        {{ selected_year }}
+    <div class="shapka">
+    <img src="{% static 'events/img/image_2024-04-29_11-20-12.png' %}" alt="pict" width="100px"></div>
+    <div style="text-align:left" class="shapka">
+        {% if selected_month and selected_year and selected_week %}
+            <h3>{{ selected_week }} неделя, {{ selected_month }}
+            {{ selected_year }}</h3>
+        {% elif current_month and current_year %}
+        <h3>{{ current_month }} {{ current_year }}</h3>
+        {% endif %}
     </div>
-    <div>
-    {% if current_month and current_year %}
-        <h2 align="right">Сегодня {{ cur_month }} {{ current_year }}</h2>
+    <div class="shapka" style="text-align:right">
+        <h3>Select view type</h3>
+        <form method="GET">
+            {% csrf_token %}
+            {{ ViewTypeForm }}
+            <select name="view type">
+                <option value="month">month</option>
+                <option value="week">week</option>
+                <option value="day">day</option>
+            </select>
+            <input type = "submit" value = "Выбрать" name="view_button">
+        </form>
+    </div>
+    <div class="shapka">
+        {% if current_month and current_year %}
+            <h3 align="right">Сегодня {{ current_month }} {{ current_year }}</h3>
         {% endif %}
     </div>
 </header>
 <aside>
+    {% if flag_month %}
     <form method="GET">
         <h4>Выберите дату:</h4>
         <select name="selected_year">
@@ -123,9 +142,8 @@
         </select>
     <input type="submit" value="Выбрать">
     </form>
-    <!--{% for ev in events %}
-        <p>ev.description</p>
-    {% endfor %}-->
+    {% endif %}
+
     <form method="POST">
         {% csrf_token %}
         <label for="id_name">Name:</label>
@@ -144,9 +162,65 @@
         <br>
         <button type="submit">Добавить</button>
     </form>
-</aside>
-<main>
-<table>
+
+
+    {% if flag_week %}
+        <h2>Выберите дату:</h2>
+        <form method="GET">
+        {% csrf_token %}
+    <!--Выбор года, месяца и недели: выбрать сразу нужный год, месяц и неделю, нажать кнопку-->
+        <select name="selected_year">
+            <option value="1">2015</option>
+            <option value="2">2016</option>
+            <option value="3">2017</option>
+            <option value="4">2018</option>
+            <option value="5">2019</option>
+            <option value="6">2020</option>
+            <option value="7">2021</option>
+            <option value="8">2022</option>
+            <option value="9">2023</option>
+            <option value="10">2024</option>
+            <option value="11">2025</option>
+            <option value="12">2026</option>
+            <option value="13">2027</option>
+            <option value="14">2028</option>
+            <option value="15">2029</option>
+            <option value="16">2030</option>
+        </select>
+
+        <select name="selected_month">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select>
+
+    <!--Выбор недели: динамическое определение количества недель в месяце. -->
+    <!--На основе переданных из views данных определяется нужное количество <option>-->
+    <!--Вывод с помощью ранее заданных во views ключей словаря-->
+        {{ WeekNumberForm }}
+        <select name="number_of_week">
+            {% for option in options %}
+                <option value="{{ option.value }}">{{ option.label }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Выбрать" name="week_to_show">
+
+    </form>
+    {% endif %}
+    </aside>
+    <main>
+    {% if flag_month %}
+        <div class="sc">
+    <table>
     <thead>
     <tr valign="bottom">
         <th>Пн</th>
@@ -171,7 +245,49 @@
     </tr>
     {% endfor %}
     </tbody>
-</table>
+    </table>
+    {% endif %}
+    {% if flag_week %}
+    <table>
+        <thead class="thead">
+        <tr>
+            <th class="week"></th>
+            <th class="week">Пн</th>
+            <th class="week">Вт</th>
+            <th class="week">Ср</th>
+            <th class="week">Чт</th>
+            <th class="week">Пт</th>
+            <th class="week">Сб</th>
+            <th class="week">Вс</th>
+        </tr>
+        <tr>
+            <th class="week"></th>
+            {% for day in current_week %}
+            <th class="week">
+                {% if day %}
+                    {{ day.day }}
+                {% endif %}
+            </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody class="tbody">
+            {% for hour in hours %}
+            <tr>
+                <td valign="bottom" class="time">
+                    {% if hour %}
+                        {{ hour }}
+                    {% endif %}
+                </td>
+                {% for day in current_week %}
+                <td></td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+        </div>
 </main>
 <!--
 {% for event in events %}

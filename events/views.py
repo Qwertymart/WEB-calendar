@@ -70,22 +70,26 @@ def events(request):
 
                 events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month,
                                               user=request.user)
-
+                month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
+                         'Сентябрь', 'Август', 'Ноябрь', 'Декабрь']
                 return render(request, 'events/events.html',
                               {'form': form, 'events': events, 'current_month': current_month,
                                'current_year': current_year,
-                               'days_of_month': days_of_month, 'flag_month': flag_month})
+                               'days_of_month': days_of_month, 'flag_month': flag_month,
+                               'selected_month': month[selected_month - 1], 'selected_year': selected_year})
             elif flag_week:
 
                 form = EventForm()
                 current_month = timezone.now().month
                 current_year = timezone.now().year
                 selected_week = 1
+                selected_month = request.GET.get('selected_month', None)
+                selected_year = request.GET.get('selected_year', None)
                 if 'week_to_show' in request.GET:
-                    selected_month = request.GET.get('selected_month', None)
-                    selected_year = request.GET.get('selected_year', None)
+
                     if selected_month is None:
                         current_month = timezone.now().month
+                        selected_month = current_month
                     else:
                         current_month = int(selected_month)
                     if selected_year is None:
@@ -120,11 +124,16 @@ def events(request):
                 for number in range(week_counter):
                     options.append({'value': f'{number + 1}', 'label': f'{number + 1}'})
 
+                hours = [f"{hour:02d}:00" for hour in range(1, 25)]
+                month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
+                         'Сентябрь', 'Август', 'Ноябрь', 'Декабрь']
+
                 return render(request, 'events/events.html',
-                              {'current_month': current_month,
+                              {'current_month': month[current_month - 1],
                                'current_year': YEARS[YEARS.index(name)][1],
                                'days_of_month': days_of_month, 'current_week': current_week, 'options': options,
-                               'flag_week': flag_week})
+                               'flag_week': flag_week, 'hours': hours, 'selected_month': selected_month,
+                               'selected_year': selected_year, 'selected_week': selected_week})
 
             elif flag_day:
                 return redirect('day')  # Летим в day, чтобы уже работать в функции day на новой странице
@@ -142,6 +151,7 @@ def events(request):
                     selected_year = request.GET.get('selected_year', None)
                     if selected_month is None:
                         current_month = timezone.now().month
+                        selected_month = current_month
                     else:
                         current_month = int(selected_month)
                     if selected_year is None:
