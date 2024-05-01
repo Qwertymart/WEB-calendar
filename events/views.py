@@ -1,7 +1,7 @@
 # views.py
 from django.shortcuts import render, redirect
 from .forms import EventForm, ViewTypeForm, YEARS
-from .models import events as Event
+from .models import Event as Event
 from django.utils import timezone
 from datetime import datetime
 from calendar import monthrange

@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Bellefair&family=Chonburi&display=swap');
+/*общие настройки*/
+body {
+    background: #2f303a;
+    margin: 0;
+    padding: 0;
+}
+
+/*работа с текстом*/
+#slogan {
+    background: #e0e0e0;
+    height: 450px;
+    width: 500px;
+
+    text-align: center;
+    color: black;
+    border-radius: 50px;
+
+    position: relative;
+    left: 100px;
+    top: 150px;
+    z-index: 4;
+
+    font-family: "Bellefair", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 30px;
+    word-spacing: 2px;
+    letter-spacing: 1px;
+    line-height: 20px;
+}
+
+#line_one{
+    width: 70%;
+}
+#line_two{
+    height: 2px;
+    width: 55%;
+    position: relevant;
+    bottom: 15px;
+}
+
+/* лого, мб преобразую в класс*/
+#logo {
+    margin: 5px 0 15px 0;
+    height: 35%;
+    width: 35%;
+}
+
+/*нижняя надпись TimeTracer*/
+#undertext {
+    font-family: "Chonburi", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 40px;
+    line-height: 0px;
+
+    position: relative;
+    top: 15px;
+}
+
+#big_pict {
+    height: 68%;
+    width: 55%;
+
+    z-index: 5;
+    position: absolute;
+    right: 40px;
+    top: 50px;
+
+}
+
+.refers {
+    background: #e0e0e0;
+    height: 50px;
+    width: 680px;
+    border-radius: 50px;
+    text-align: center;
+    line-height: 50px;
+
+    position: absolute;
+    right: 100px;
+    top: 550px;
+    z-index: 30;
+}
+
+.link {
+    color: black;
+    text-decoration: none;
+    font-family: "Chonburi", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 30px;
+    word-spacing: 2px;
+    letter-spacing: 1px;
+    margin: 0 60px;
+    border-radius: 50px;
+    height: 50px;
+    width: 50px;
+}
+
+/*псевдокласс, красящий кнопку при наведении*/
+.link:hover{
+    color: #8E7E14;
+    text-decoration: underline;
+    text-decoration-color: #8E7E14;
+    cursor: pointer;
+}
+
+#undertext:hover, .string:hover {
+    color: #8E7E14;
+    cursor: default;
+}
