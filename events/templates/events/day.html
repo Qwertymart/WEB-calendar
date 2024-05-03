@@ -1,16 +1,77 @@
+<!-- events.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events</title>
 </head>
 <body>
-    <h1>Hola! The day came!!!</h1>
-<form>
+<h1>DAY</h1>
+<h1>Add Event</h1>
+<form method="POST">
     {% csrf_token %}
-    {{ DayView }}
-    <label for="id_day_select_form"
-
+    <label for="id_name">Name:</label>
+    {{ form.name }}
+    <br>
+    <label for="id_date_start">Start Date:</label>
+    <input type="date" id="id_date_start" name="date_start">
+    <br>
+    <label for="id_date_finish">Finish Date:</label>
+    <input type="date" id="id_date_finish" name="date_finish">
+    <br>
+    <label for="id_description">Description:</label>
+    {{ form.description }}
+    <br>
+    <label for="id_participants">Participants:</label>
+    {{ form.participants }}
+    <br>
+    <button type="submit">Add Event</button>
 </form>
+
+<h2>Select view type</h2>
+<form method="GET">
+    {% csrf_token %}
+    {{ ViewTypeForm }}
+    <select name="view type">
+        <option value="month">month</option>
+        <option value="week">week</option>
+        <option value="day">day</option>
+    </select>
+    <input type = "submit" value = "Submit" name="view_button">
+</form>
+
+
+<form name="day_selection" method="POST">
+    {% csrf_token %}
+        {{ form_day.as_p }}
+        <button type="submit">Select</button>
+</form>
+{% if selected_date %}
+        <p>Selected Date: {{ selected_date }}</p>
+    {% endif %}
+{% if current_month and current_year %}
+<h2>{{ current_day }}</h2>
+
+{% endif %}
+
+{% for event in events %}
+<div>
+    <h3>{{ event.name }}</h3>
+    <h3>{{ event.user }}</h3>
+    <p><strong>Start Date:</strong> {{ event.date_start }}</p>
+    <p><strong>Finish Date:</strong> {{ event.date_finish }}</p>
+    <p><strong>Description:</strong> {{ event.description }}</p>
+    <p><strong>Participants:</strong>
+
+    </p>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="delete_event_id" value="{{ event.id }}">
+        <button type="submit">Delete</button>
+    </form>
+</div>
+{% endfor %}
 </body>
+
 </html>

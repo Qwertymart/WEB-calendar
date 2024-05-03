@@ -1,3 +1,4 @@
+<!-- events.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,7 @@
     <title>Events</title>
 </head>
 <body>
+<h1>WEEK</h1>
 <h1>Add Event</h1>
 <form method="POST">
     {% csrf_token %}
@@ -38,7 +40,9 @@
     </select>
     <input type = "submit" value = "Submit" name="view_button">
 </form>
-<h2>Select Year:</h2>
+
+
+    <h2>Select Year:</h2>
 <form method="GET">
     {% csrf_token %}
 <!--Выбор года, месяца и недели: выбрать сразу нужный год, месяц и неделю, нажать кнопку-->
@@ -87,11 +91,15 @@
 <!--На основе переданных из views данных определяется нужное количество <option>-->
 <!--Вывод с помощью ранее заданных во views ключей словаря-->
     {{ WeekNumberForm }}
-    <select name="number_of_week">
+    <input type="hidden" name="view_type" value="{{ view_type }}">
+
+    <select name="select_week">
         {% for option in options %}
             <option value="{{ option.value }}">{{ option.label }}</option>
         {% endfor %}
     </select>
+
+    {{ select_week }}
     <input type="submit" value="Go" name="week_to_show">
 
 </form>
@@ -123,6 +131,8 @@
 </table>
 {% endif %}
 
+
+
 {% for event in events %}
 <div>
     <h3>{{ event.name }}</h3>
@@ -131,9 +141,7 @@
     <p><strong>Finish Date:</strong> {{ event.date_finish }}</p>
     <p><strong>Description:</strong> {{ event.description }}</p>
     <p><strong>Participants:</strong>
-        {% for participant in event.participants.all %}
-        {{ participant.username }}{% if not forloop.last %}, {% endif %}
-        {% endfor %}
+
     </p>
     <form method="POST">
         {% csrf_token %}
@@ -143,4 +151,5 @@
 </div>
 {% endfor %}
 </body>
+
 </html>

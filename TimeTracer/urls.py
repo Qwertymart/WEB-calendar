@@ -17,14 +17,23 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from .views import home
-from events.views import events#, #week, day
+from events.views import events, week, day
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', home, name='home'),
     #path('', day, name='day'),
     path('users/', include('users.urls', namespace='users')),
-    path('events/', events, name='events'),
+
+    # Маршрут для отображения календаря по умолчанию
+    path('events/', events, {'view_type': 'month'}, name='events'),
+    path('events/week/', week, name='week'),
+    path('events/day/', day, name='day'),
+    # Дополнительные маршруты для обработки различных действий или типов отображения
+    # path('events/', events, name='month_calendar'),
+    # path('events/week/', events, {'view_type': 'week'}, name='week_calendar'),
+    path('events/week/<int:select_week>/', week, name='week_calendar_selected_week'),
+
     #path('events/week/', week, name='week'),
     #path('events/day/', day, name='day'),
 ]
