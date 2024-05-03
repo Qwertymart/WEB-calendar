@@ -127,10 +127,12 @@ def events(request):
                 hours = [f"{hour:02d}:00" for hour in range(1, 25)]
                 month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
                          'Сентябрь', 'Август', 'Ноябрь', 'Декабрь']
+                events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month,
+                                              user=request.user)
 
                 return render(request, 'events/events.html',
-                              {'current_month': month[current_month - 1],
-                               'current_year': YEARS[YEARS.index(name)][1],
+                              {'current_month': month[current_month - 1], 'form': form,
+                               'current_year': YEARS[YEARS.index(name)][1], 'events': events,
                                'days_of_month': days_of_month, 'current_week': current_week, 'options': options,
                                'flag_week': flag_week, 'hours': hours, 'selected_month': selected_month,
                                'selected_year': selected_year, 'selected_week': selected_week})

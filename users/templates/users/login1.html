@@ -55,7 +55,7 @@
 	<div class='block'>
 		<img vspace="40px" hspace="50px" src="{% static 'users/img/photo_2024-03-29_21-03-46.jpg' %}" alt="Our pict" width="200px">
 		<h1> Вход </h1>
-<form method='post'>
+    <form method='post'>
     {% csrf_token %}
     {{ form.as_p }}
     <button style="background-color:#2F303A; color:#FFF" type="submit" >Войти</button>
