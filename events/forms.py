@@ -63,6 +63,10 @@ class ViewTypeForm(forms.Form):
     type = forms.ChoiceField(choices=TYPES)
 
 
+class DateSelectionForm(forms.Form):
+    selected_date = forms.DateField(label='Select Date', widget=forms.SelectDateWidget())
+
+
 class WeekNumberForm(forms.Form):
     number_of_week = forms.ChoiceField(choices=WEEKS)
 

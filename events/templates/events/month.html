@@ -7,7 +7,6 @@
     <title>Events</title>
 </head>
 <body>
-<h1>WEEK</h1>
 <h1>Add Event</h1>
 <form method="POST">
     {% csrf_token %}
@@ -32,6 +31,7 @@
 <h2>Select view type</h2>
 <form method="GET">
     {% csrf_token %}
+    {{ flag_existence }}
     {{ ViewTypeForm }}
     <select name="view type">
         <option value="month">month</option>
@@ -41,11 +41,97 @@
     <input type = "submit" value = "Submit" name="view_button">
 </form>
 
+{% if flag_week %}
+        <h2>Select Year:</h2>
+    <form method="GET">
+        {% csrf_token %}
+        {{ flag_existence }}
+    <!--Выбор года, месяца и недели: выбрать сразу нужный год, месяц и неделю, нажать кнопку-->
+        <select name="selected_year">
+            <option value="1">2015</option>
+            <option value="2">2016</option>
+            <option value="3">2017</option>
+            <option value="4">2018</option>
+            <option value="5">2019</option>
+            <option value="6">2020</option>
+            <option value="7">2021</option>
+            <option value="8">2022</option>
+            <option value="9">2023</option>
+            <option value="10">2024</option>
+            <option value="11">2025</option>
+            <option value="12">2026</option>
+            <option value="13">2027</option>
+            <option value="14">2028</option>
+            <option value="15">2029</option>
+            <option value="16">2030</option>
+        </select>
 
-    <h2>Select Year:</h2>
+
+
+        <h2>Select Month:</h2>
+
+        <select name="selected_month">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select>
+
+
+
+        <h2>Select Week:</h2>
+    <!--Выбор недели: динамическое определение количества недель в месяце. -->
+    <!--На основе переданных из views данных определяется нужное количество <option>-->
+    <!--Вывод с помощью ранее заданных во views ключей словаря-->
+        {{ WeekNumberForm }}
+        <select name="select_week">
+            {% for option in options %}
+                <option value="{{ option.value }}">{{ option.label }}</option>
+            {% endfor %}
+        </select>
+        {{ flag_existence }}
+        <input type="submit" value="Go" name="week_to_show">
+
+    </form>
+    {% if current_month and current_year %}
+    <h2>{{ current_year }} / {{ current_month }}</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Пн</th>
+            <th>Вт</th>
+            <th>Ср</th>
+            <th>Чт</th>
+            <th>Пт</th>
+            <th>Сб</th>
+            <th>Вс</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            {% for day in current_week %}
+            <td>
+                {% if day %}
+                    {{ day.day }}
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        </tbody>
+    </table>
+    {% endif %}
+{% endif %}
+
+<h2>Select Year:</h2>
 <form method="GET">
-    {% csrf_token %}
-<!--Выбор года, месяца и недели: выбрать сразу нужный год, месяц и неделю, нажать кнопку-->
     <select name="selected_year">
         <option value="1">2015</option>
         <option value="2">2016</option>
@@ -64,11 +150,11 @@
         <option value="15">2029</option>
         <option value="16">2030</option>
     </select>
+    <input type="submit" value="Go">
+</form>
 
-
-
-    <h2>Select Month:</h2>
-
+<h2>Select Month:</h2>
+<form method="GET">
     <select name="selected_month">
         <option value="1">January</option>
         <option value="2">February</option>
@@ -83,26 +169,9 @@
         <option value="11">November</option>
         <option value="12">December</option>
     </select>
-
-
-
-    <h2>Select Week:</h2>
-<!--Выбор недели: динамическое определение количества недель в месяце. -->
-<!--На основе переданных из views данных определяется нужное количество <option>-->
-<!--Вывод с помощью ранее заданных во views ключей словаря-->
-    {{ WeekNumberForm }}
-    <input type="hidden" name="view_type" value="{{ view_type }}">
-
-    <select name="select_week">
-        {% for option in options %}
-            <option value="{{ option.value }}">{{ option.label }}</option>
-        {% endfor %}
-    </select>
-
-    {{ select_week }}
-    <input type="submit" value="Go" name="week_to_show">
-
+    <input type="submit" value="Go">
 </form>
+
 {% if current_month and current_year %}
 <h2>{{ current_year }} / {{ current_month }}</h2>
 <table>
@@ -118,20 +187,20 @@
     </tr>
     </thead>
     <tbody>
+    {% for week in days_of_month %}
     <tr>
-        {% for day in current_week %}
+        {% for day in week %}
         <td>
             {% if day %}
-                {{ day.day }}
+            {{ day.day }}
             {% endif %}
         </td>
         {% endfor %}
     </tr>
+    {% endfor %}
     </tbody>
 </table>
 {% endif %}
-
-
 
 {% for event in events %}
 <div>
