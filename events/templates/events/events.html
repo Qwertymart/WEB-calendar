@@ -90,6 +90,7 @@
             color:#D8C26E;
             height:20px;
             width:100px;
+            font-size: 20px;
             text-align:left;
         }
         .event:hover::after {
@@ -113,16 +114,24 @@
     <div style="text-align:left" class="shapka">
         {% if flag_week %}
             {% if selected_month and selected_year and selected_week %}
-                <h3>{{ selected_week }} неделя, {{ selected_month }}
-                {{ selected_year }}</h3>
+                <h3>{{ selected_month }}
+                {{ selected_year }} {{ selected_week }} неделя</h3>
+            {% elif current_month and current_year %}
+                <h3>{{ current_month }} {{ current_year }}</h3>
+        {% endif %}
+        {% elif flag_month %}
+            {% if selected_month and selected_year and selected_week %}
+                <h3>{{ selected_month }}
+                {{ selected_year }} {{ selected_week }} неделя</h3>
             {% elif current_month and current_year %}
                 <h3>{{ current_month }} {{ current_year }}</h3>
         {% endif %}
         {% endif %}
+
     </div>
     <!-- для выбора отображения календаря-->
     <div class="shapka" style="text-align:right">
-        <h3>Select view type</h3>
+        <h3>Выберете отображение</h3>
         <form method="GET">
             {% csrf_token %}
             {{ ViewTypeForm }}
@@ -142,39 +151,6 @@
     </div>
 </header>
 <aside>
-    <!-- вот реализация добавления события-->
-    <button class="open-button" onclick="openForm()">Добавить событие</button>
-    <div class="form-popup" id="myForm">
-        <form method="POST">
-            {% csrf_token %}
-            <label for="id_name">Name:</label>
-            {{ form.name }}
-            <br>
-            <label for="id_date_start">Start Date:</label>
-            <input type="date" id="id_date_start" name="date_start">
-            <br>
-            <label for="id_date_finish">Finish Date:</label>
-            <input type="date" id="id_date_finish" name="date_finish">
-            <br>
-            <label for="id_description">Description:</label>
-            {{ form.description }}
-            <br>
-            <label for="id_participants">Participants:</label>
-            {{ form.participants }}
-            <br>
-            <button type="submit">Добавить</button>
-            <button type="button" onclick="closeForm()">Закрыть</button>
-        </form>
-    </div>
-    <script>
-    function openForm() {
-      document.getElementById("myForm").style.display = "block";
-    }
-
-    function closeForm() {
-      document.getElementById("myForm").style.display = "none";
-    }
-    </script>
     <!--уловие стоит для выбора даты для месяца-->
     {% if flag_month %}
     <form method="GET">
@@ -221,22 +197,22 @@
         {% csrf_token %}
     <!--Выбор года, месяца и недели: выбрать сразу нужный год, месяц и неделю, нажать кнопку-->
         <select name="selected_year">
-            <option value="1">2015</option>
-            <option value="2">2016</option>
-            <option value="3">2017</option>
-            <option value="4">2018</option>
-            <option value="5">2019</option>
-            <option value="6">2020</option>
-            <option value="7">2021</option>
-            <option value="8">2022</option>
-            <option value="9">2023</option>
-            <option value="10">2024</option>
-            <option value="11">2025</option>
-            <option value="12">2026</option>
-            <option value="13">2027</option>
-            <option value="14">2028</option>
-            <option value="15">2029</option>
-            <option value="16">2030</option>
+            <option value="2015">2015</option>
+            <option value="2016">2016</option>
+            <option value="2017">2017</option>
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2020">2022</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+            <option value="2029">2029</option>
+            <option value="2030">2030</option>
         </select>
 
         <select name="selected_month">
@@ -266,12 +242,73 @@
         <input type="submit" value="Выбрать" name="week_to_show">
     </form>
     {% endif %}
+    <!-- вот реализация добавления события-->
+    <button class="open-button" onclick="openFor()">Добавить событие</button>
+    <div class="form-popup" id="myForm">
+        <form method="POST">
+            {% csrf_token %}
+            <label for="id_name">Name:</label>
+            {{ form.name }}
+            <br>
+            <label for="id_date_start">Start Date:</label>
+            <input type="date" id="id_date_start" name="date_start">
+            <br>
+            <label for="id_date_finish">Finish Date:</label>
+            <input type="date" id="id_date_finish" name="date_finish">
+            <br>
+            <label for="id_description">Description:</label>
+            {{ form.description }}
+            <br>
+            <label for="id_participants">Participants:</label>
+            {{ form.participants }}
+            <br>
+            <button type="submit">Добавить</button>
+            <button type="button" onclick="closeFor()">Закрыть</button>
+        </form>
+    </div>
+    <script>
+    function openFor() {
+      document.getElementById("myForm").style.display = "block";
+    }
+
+    function closeFor() {
+      document.getElementById("myForm").style.display = "none";
+    }
+    </script>
+    <button class="open-button" onclick="openForm()">Удалить событие</button>
+    <div class="form-popup" id="delete">
+        {% for event in events %}
+    <div>
+        <h3>{{ event.name }}</h3>
+        <h3>{{ event.user }}</h3>
+        <p><strong>Start Date:</strong> {{ event.date_start }}</p>
+        <p><strong>Finish Date:</strong> {{ event.date_finish }}</p>
+        <p><strong>Description:</strong> {{ event.description }}</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="delete_event_id" value="{{ event.id }}">
+            <button type="submit">Delete</button>
+        </form>
+    </div>
+    {% endfor %}
+            <button type="button" onclick="closeForm()">Закрыть</button>
+
+    </div>
+    <script>
+    function openForm() {
+      document.getElementById("delete").style.display = "block";
+    }
+
+    function closeForm() {
+      document.getElementById("delete").style.display = "none";
+    }
+    </script>
     </aside>
 
     <main>
         <!--вот тут уже для таблиц всё(условия так же стоят для различия месяца и недели/дня-->
     {% if flag_month %}
-    hhh
         <div class="sc">
     <table>
     <thead>
@@ -309,7 +346,6 @@
     {% endif %}
 
     {% if flag_week %}
-            hhh
     <table>
         <thead class="thead">
         <tr>
@@ -334,11 +370,9 @@
         </tr>
         </thead>
         <tbody class="tbody">
-
-            {% for hour in hours %}
             <tr>
+                {% for hour in hours %}
                 <td valign="bottom" class="time">
-
                     {% if hour %}
                         {{ hour }}
                     {% endif %}
@@ -346,7 +380,7 @@
                 {% for day in current_week %}
                 <td><!--Добавление события в ячейку-->
                     {% for event in events %}
-                    {{ event.date_start.date }}
+
                     {% if day.date == event.date_start.date %}
                     <div class="event" data-title="{{ event.description }}">
                         {{ event.name }}
