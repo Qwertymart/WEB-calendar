@@ -209,7 +209,7 @@ def events(request, view_type='month'):
         days_of_month.append(week)
 
     events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month, user=request.user)
-    notification = Notification.obfects.filter(user=request.user)
+    notification = Notification.objects.filter(user=request.user)
     context = {'form': form, 'events': events, 'current_month': current_month, 'current_year': current_year,
                'days_of_month': days_of_month, 'notification': notification}
     return render(request, 'events/events.html', context)

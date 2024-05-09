@@ -1,5 +1,5 @@
 bcrypt==4.1.2
-Django==5.0.4
+Django==4.0.4
 langchain==0.1.19
 gigachain==0.1.17
 gigachain-cli==0.0.21
