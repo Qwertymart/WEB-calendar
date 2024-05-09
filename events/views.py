@@ -6,6 +6,19 @@ from django.utils import timezone
 from datetime import datetime
 from calendar import monthrange
 
+from langchain.schema import HumanMessage, SystemMessage
+from langchain.chat_models.gigachat import GigaChat
+
+# Авторизация в сервисе GigaChat
+auth = 'OWRjNWE4YjgtYmNiZC00YTNlLThmM2EtMzM3ODQxZmM0ODY0Ojk5M2RmY2E4LWI4ZDEtNGI4Yi05ZmQ1LWU3NzBkMGNhYWQ3OQ=='
+chat = GigaChat(credentials=auth, verify_ssl_certs=False)
+
+messages = [
+    SystemMessage(
+        content="Помогите пользователю написать краткое описание события на основе его названия."
+    )
+]
+
 
 def week_view(request, select_week):
     form = EventForm()
@@ -119,10 +132,18 @@ def events(request, view_type='month'):
             event.delete()  # Удаляем событие
             return redirect('/events')  # Перенаправляем обратно на страницу событий после удаления
         else:
+            event_name = request.POST.get('name', None)
+            messages.append(HumanMessage(content=event_name))
+            res = chat(messages)
+            messages.append(res)
+            description_event = res.content
+
             form = EventForm(request.POST)
+
             if form.is_valid():
                 event = form.save(commit=False)
                 event.user = request.user
+                event.description = description_event
                 event.save()
                 return redirect('/events')
 
@@ -184,10 +205,18 @@ def week(request, select_week='1'):
             event.delete()  # Удаляем событие
             return redirect('week')  # Перенаправляем обратно на страницу событий после удаления
         else:
+            event_name = request.POST.get('name', None)
+            messages.append(HumanMessage(content=event_name))
+            res = chat(messages)
+            messages.append(res)
+            description_event = res.content
+
             form = EventForm(request.POST)
+
             if form.is_valid():
                 event = form.save(commit=False)
                 event.user = request.user
+                event.description = description_event
                 event.save()
                 return redirect('week')
     else:
@@ -227,10 +256,18 @@ def day(request):
             event.delete()  # Удаляем событие
             return redirect('day')  # Перенаправляем обратно на страницу событий после удаления
         else:
+            event_name = request.POST.get('name', None)
+            messages.append(HumanMessage(content=event_name))
+            res = chat(messages)
+            messages.append(res)
+            description_event = res.content
+
             form = EventForm(request.POST)
+
             if form.is_valid():
                 event = form.save(commit=False)
                 event.user = request.user
+                event.description = description_event
                 event.save()
                 return redirect('day')
     else:
