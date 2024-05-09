@@ -23,3 +23,16 @@ class Event(models.Model):
         if self.time_start and not self.time_finish:
             self.time_finish = self.time_start
         super().save(*args, **kwargs)
+
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "Notification"
+        ordering = ['-created_at']
+

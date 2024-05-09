@@ -2,8 +2,9 @@
 from django.shortcuts import render, redirect
 from .forms import EventForm, ViewTypeForm, YEARS, DateSelectionForm
 from .models import Event as Event
+from .models import Notification
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime, timedelta
 from calendar import monthrange
 
 from langchain.schema import HumanMessage, SystemMessage
@@ -68,11 +69,13 @@ def week_view(request, select_week):
     for number in range(week_counter):
         options.append({'value': f'{number + 1}', 'label': f'{number + 1}'})
     hours = [f"{hour:02d}:00" for hour in range(1, 25)]
+    notification = Notification.objects.filter(user=request.user)
 
     context = {'current_month': current_month, 'form': form, 'events': events,
                'current_year': YEARS[YEARS.index(name)][1], 'hours': hours,
                'days_of_month': days_of_month, 'current_week': current_week,
-               'options': options, 'select_week': selected_week}
+               'options': options, 'select_week': selected_week,
+               'notification': notification}
     return context
 
 
@@ -87,6 +90,16 @@ def events(request, view_type='month'):
                 return redirect('week')  # Летим в week, чтобы уже работать в функции week на новой странице
             elif temp == 'day':
                 return redirect('day')
+
+    user_events = Event.objects.filter(user=request.user)
+
+    for event in user_events:
+        time_difference = event.date_start - timezone.now()
+        if time_difference <= timedelta(hours=1) and time_difference.total_seconds() > 0:
+            notification_time = event.date_start - timedelta(hours=1)
+            notification = Notification(user=request.user, text=f"Время начала события '{event.name}' через час",
+                                        created_at=notification_time)
+            notification.save()
 
     def month_view():
         form = EventForm()
@@ -115,12 +128,14 @@ def events(request, view_type='month'):
 
         events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month,
                                       user=request.user)
+        notification = Notification.objects.filter(user=request.user)
         month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
                  'Сентябрь', 'Август', 'Ноябрь', 'Декабрь']
 
         context = {'form': form, 'events': events, 'current_month': month[current_month - 1],
                    'current_year': current_year, 'selected_year': selected_year,
-                   'days_of_month': days_of_month, 'selected_month': month[selected_month - 1]}
+                   'days_of_month': days_of_month, 'selected_month': month[selected_month - 1],
+                   'notification': notification}
         return context
 
     if request.method == 'POST':
@@ -189,8 +204,9 @@ def events(request, view_type='month'):
         days_of_month.append(week)
 
     events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month, user=request.user)
+    notification = Notification.obfects.filter(user=request.user)
     context = {'form': form, 'events': events, 'current_month': current_month, 'current_year': current_year,
-               'days_of_month': days_of_month}
+               'days_of_month': days_of_month, 'notification': notification}
     return render(request, 'events/events.html', context)
 
 
@@ -329,7 +345,9 @@ def day(request):
              'Сентябрь', 'Август', 'Ноябрь', 'Декабрь']
     hours = [f"{hour:02d}:00" for hour in range(1, 25)]
 
+    notification = Notification.objects.filter(user=request.user)
+
     calendar_data = {'form': form, 'form_day': form_day, 'events': events, 'current_month': month[current_month - 1],
                      'current_year': YEARS[YEARS.index(name)][1], 'days_of_month': days_of_month,
-                     'hours': hours}
+                     'hours': hours, 'notification': notification}
     return render(request, 'events/day.html', calendar_data)
