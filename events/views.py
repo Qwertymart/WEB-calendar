@@ -96,7 +96,7 @@ def events(request, view_type='month'):
     for event in user_events:
 
         date_start_datetime = datetime.combine(event.date_start, event.time_start)
-        now_with_timezone = timezone.localtime(timezone.now())
+        now_with_timezone = (timezone.now())
         date_start_aware = date_start_datetime.replace(tzinfo=timezone.utc)
         time_difference = date_start_aware - now_with_timezone
 
