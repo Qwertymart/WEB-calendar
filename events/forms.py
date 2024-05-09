@@ -1,15 +1,17 @@
 from django import forms
 from django.forms.widgets import DateInput
-from .models import events
+from .models import events as Event
 
 
 class EventForm(forms.ModelForm):
     class Meta:
-        model = events
-        fields = ['name', 'date_start', 'date_finish', 'description', 'participants']
+        model = Event
+        fields = ['name', 'date_start', 'time_start', 'date_finish', 'time_finish', 'description']
         widgets = {
-            'date_start': DateInput(attrs={'class': 'datepicker'}),
-            'date_finish': DateInput(attrs={'class': 'datepicker'}),
+            'date_start': forms.DateInput(attrs={'class': 'datepicker'}),
+            'time_start': forms.TimeInput(attrs={'class': 'timepicker'}),
+            'date_finish': forms.DateInput(attrs={'class': 'datepicker'}),
+            'time_finish': forms.TimeInput(attrs={'class': 'timepicker'}),
         }
 
 
