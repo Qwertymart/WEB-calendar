@@ -94,7 +94,12 @@ def events(request, view_type='month'):
     user_events = Event.objects.filter(user=request.user)
 
     for event in user_events:
-        time_difference = event.date_start - timezone.now()
+
+        date_start_datetime = datetime.combine(event.date_start, event.time_start)
+        now_with_timezone = timezone.localtime(timezone.now())
+        date_start_aware = date_start_datetime.replace(tzinfo=timezone.utc)
+        time_difference = date_start_aware - now_with_timezone
+
         if time_difference <= timedelta(hours=1) and time_difference.total_seconds() > 0:
             notification_time = event.date_start - timedelta(hours=1)
             notification = Notification(user=request.user, text=f"Время начала события '{event.name}' через час",
