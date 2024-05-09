@@ -152,9 +152,6 @@ def events(request, view_type='month'):
         print(view_type)
         if view_type == 'week':
             return redirect('week')
-            selected_week = request.GET.get('select_week', '1')
-            calendar_data = week_view(selected_week)
-            template_name = 'events/week.html'
         elif view_type == 'day':
             return redirect('day')
         elif view_type == 'month':
@@ -195,7 +192,6 @@ def events(request, view_type='month'):
 
 
 def week(request, select_week='1'):
-
     if request.method == 'POST':
         if 'my_button' in request.POST:
             return redirect('home')
@@ -246,8 +242,8 @@ def day(request):
         form_day = DateSelectionForm(request.POST)
         if form_day.is_valid():
             selected_date = form_day.cleaned_data['selected_date']
-
-
+            day_of_week = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su']
+            print(selected_date)
         if 'my_button' in request.POST:
             return redirect('home')
         elif 'delete_event_id' in request.POST:  # Проверяем, было ли отправлено сообщение об удалении
@@ -323,8 +319,8 @@ def day(request):
             week_of_month.append(None)
         days_of_month.append(week_of_month)
 
-    #events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month,
-                                 # user=request.user)
+    # events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month,
+    # user=request.user)
     month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
              'Сентябрь', 'Август', 'Ноябрь', 'Декабрь']
     hours = [f"{hour:02d}:00" for hour in range(1, 25)]
