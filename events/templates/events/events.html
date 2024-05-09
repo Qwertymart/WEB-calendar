@@ -25,6 +25,7 @@
             border-radius:30px;
             margin-left: 10px;
             width:1240px;
+            z-index:1;
         }
         /* 2 штучки для прокуртки таблицы недели(шапка остаётся на месте)*/
         .thead{
@@ -65,8 +66,8 @@
         }
         .shapka{
             display: inline-block;
-            margin-right: 50px;
-            width: 300px;
+            margin-right:140px;
+            wight: 300px;
             margin-top:-10px;
         }
         /* 2 штучки дял открытия формы добавления события*/
@@ -104,6 +105,21 @@
             border: 1px solid #FFF; /* Параметры рамки */
             color:#FFF;
         }
+        <!--2 штучки для уведомлений-->
+        .mes{
+            display: none;
+            background-color:#3A3A3F;
+            border: 1px solid wigth;
+            z-index:10;
+            width: 300px; height:500px;
+            right: 270px; top: 40px;
+
+        }
+        .mes-button{
+            cursor: pointer;
+            z-index:1;
+
+        }
     </style>
 </head>
 <body>
@@ -112,20 +128,8 @@
     <img src="{% static 'events/img/image_2024-04-29_11-20-12.png' %}" alt="pict" width="100px"></div>
     <!-- для показа даты, которую выбрали-->
     <div style="text-align:left" class="shapka">
-        {% if flag_week %}
-            {% if selected_month and selected_year and selected_week %}
-                <h3>{{ selected_month }}
-                {{ selected_year }} {{ selected_week }} неделя</h3>
-            {% elif current_month and current_year %}
-                <h3>{{ current_month }} {{ current_year }}</h3>
-        {% endif %}
-        {% elif flag_month %}
-            {% if selected_month and selected_year and selected_week %}
-                <h3>{{ selected_month }}
-                {{ selected_year }} {{ selected_week }} неделя</h3>
-            {% elif current_month and current_year %}
-                <h3>{{ current_month }} {{ current_year }}</h3>
-        {% endif %}
+        {% if selected_year and selected_month %}
+            {{ selected_month }} {{ selected_year }}
         {% endif %}
 
     </div>
@@ -149,10 +153,34 @@
             <h3 align="right">Сегодня {{ current_month }} {{ current_year }}</h3>
         {% endif %}
     </div>
+    <!--Уведомления-->
+    <!--<div class="shapka">
+        <button><img src="{% static 'events/img/png-clipart-bell-bell.png' %}" alt="bell-bell"
+           width="50px" class="mes-button" onclick="openmes()"></button>
+    </div>
+    <div class="mes" id="mess">
+        <p>pp</p>
+        <button type="button" onclick="closemes()">Закрыть</button>
+    </div>
+    <script>
+    function openmes() {
+      document.getElementById("mess").style.display = "block";
+    }
+
+    function closemes() {
+      document.getElementById("mess").style.display = "none";
+    }
+    </script>-->
+    <!--Для выхода-->
+    <div class="shapka">
+        <form method="GET">
+            {% csrf_token %}
+            <button type = "submit" value = "Exit" name="exit">exit</button>
+        </form>
+    </div>
 </header>
 <aside>
-    <!--уловие стоит для выбора даты для месяца-->
-    {% if flag_month %}
+    <!--Выбор даты для месяца-->
     <form method="GET">
         <h4>Выберите дату:</h4>
         <select name="selected_year">
@@ -189,59 +217,7 @@
         </select>
     <input type="submit" value="Выбрать">
     </form>
-    {% endif %}
 
-    {% if flag_week %}
-        <h2>Выберите дату:</h2>
-        <form method="GET">
-        {% csrf_token %}
-    <!--Выбор года, месяца и недели: выбрать сразу нужный год, месяц и неделю, нажать кнопку-->
-        <select name="selected_year">
-            <option value="2015">2015</option>
-            <option value="2016">2016</option>
-            <option value="2017">2017</option>
-            <option value="2018">2018</option>
-            <option value="2019">2019</option>
-            <option value="2020">2020</option>
-            <option value="2021">2021</option>
-            <option value="2020">2022</option>
-            <option value="2023">2023</option>
-            <option value="2024">2024</option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
-            <option value="2027">2027</option>
-            <option value="2028">2028</option>
-            <option value="2029">2029</option>
-            <option value="2030">2030</option>
-        </select>
-
-        <select name="selected_month">
-            <option value="1">January</option>
-            <option value="2">February</option>
-            <option value="3">March</option>
-            <option value="4">April</option>
-            <option value="5">May</option>
-            <option value="6">June</option>
-            <option value="7">July</option>
-            <option value="8">August</option>
-            <option value="9">September</option>
-            <option value="10">October</option>
-            <option value="11">November</option>
-            <option value="12">December</option>
-        </select>
-
-    <!--Выбор недели: динамическое определение количества недель в месяце. -->
-    <!--На основе переданных из views данных определяется нужное количество <option>-->
-    <!--Вывод с помощью ранее заданных во views ключей словаря-->
-        {{ WeekNumberForm }}
-        <select name="number_of_week">
-            {% for option in options %}
-                <option value="{{ option.value }}">{{ option.label }}</option>
-            {% endfor %}
-        </select>
-        <input type="submit" value="Выбрать" name="week_to_show">
-    </form>
-    {% endif %}
     <!-- вот реализация добавления события-->
     <button class="open-button" onclick="openFor()">Добавить событие</button>
     <div class="form-popup" id="myForm">
@@ -275,6 +251,7 @@
       document.getElementById("myForm").style.display = "none";
     }
     </script>
+    <!--Для удаления событий-->
     <button class="open-button" onclick="openForm()">Удалить событие</button>
     <div class="form-popup" id="delete">
         {% for event in events %}
@@ -293,7 +270,6 @@
     </div>
     {% endfor %}
             <button type="button" onclick="closeForm()">Закрыть</button>
-
     </div>
     <script>
     function openForm() {
@@ -307,111 +283,42 @@
     </aside>
 
     <main>
-        <!--вот тут уже для таблиц всё(условия так же стоят для различия месяца и недели/дня-->
-    {% if flag_month %}
+        <!--вот тут уже для таблицы календаря-->
         <div class="sc">
-    <table>
-    <thead>
-    <tr valign="bottom">
-        <th>Пн</th>
-        <th>Вт</th>
-        <th>Ср</th>
-        <th>Чт</th>
-        <th>Пт</th>
-        <th>Сб</th>
-        <th>Вс</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for week in days_of_month %}
-    <tr valign="top">
-        {% for day in week %}
-        <td>
-            {% if day %}
-            {{ day.day }}
-                {% for event in events %}
-                {% if day.date == event.date_start.date %}
-                <div class="event" data-title="{{ event.description }}"><!--добавление события в ячейку-->
-                {{ event.name }}
-                </div>
-                {% endif %}
-                {% endfor %}
-            {% endif %}
-        </td>
-        {% endfor %}
-    </tr>
-    {% endfor %}
-    </tbody>
-    </table>
-    {% endif %}
-
-    {% if flag_week %}
-    <table>
-        <thead class="thead">
-        <tr>
-            <th class="week"></th>
-            <th class="week">Пн</th>
-            <th class="week">Вт</th>
-            <th class="week">Ср</th>
-            <th class="week">Чт</th>
-            <th class="week">Пт</th>
-            <th class="week">Сб</th>
-            <th class="week">Вс</th>
-        </tr>
-        <tr>
-            <th class="week"></th>
-            {% for day in current_week %}
-            <th class="week">
-                {% if day %}
+            <table>
+            <thead>
+            <tr valign="bottom">
+                <th>Пн</th>
+                <th>Вт</th>
+                <th>Ср</th>
+                <th>Чт</th>
+                <th>Пт</th>
+                <th>Сб</th>
+                <th>Вс</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for week in days_of_month %}
+            <tr valign="top">
+                {% for day in week %}
+                <td>
+                    {% if day %}
                     {{ day.day }}
-                {% endif %}
-            </th>
-            {% endfor %}
-        </tr>
-        </thead>
-        <tbody class="tbody">
-            <tr>
-                {% for hour in hours %}
-                <td valign="bottom" class="time">
-                    {% if hour %}
-                        {{ hour }}
+                        {% for event in events %}
+                        {% if day.date == event.date_start.date %}
+                            <div class="event" data-title="{{ event.description }}"><!--добавление события в ячейку-->
+                            {{ event.name }}
+                            </div>
+                        {% endif %}
+                        {% endfor %}
                     {% endif %}
-                </td>
-                {% for day in current_week %}
-                <td><!--Добавление события в ячейку-->
-                    {% for event in events %}
-
-                    {% if day.date == event.date_start.date %}
-                    <div class="event" data-title="{{ event.description }}">
-                        {{ event.name }}
-                    </div>
-                    {% endif %}
-                    {% endfor %}
                 </td>
                 {% endfor %}
             </tr>
             {% endfor %}
-        </tbody>
-    </table>
-    {% endif %}
+            </tbody>
+            </table>
         </div>
 </main>
-<!--
-{% for event in events %}
-<div>
-    <h3>{{ event.name }}</h3>
-    <h3>{{ event.user }}</h3>
-    <p><strong>Start Date:</strong> {{ event.date_start }}</p>
-    <p><strong>Finish Date:</strong> {{ event.date_finish }}</p>
-    <p><strong>Description:</strong> {{ event.description }}</p>
-
-    <form method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="delete_event_id" value="{{ event.id }}">
-        <button type="submit">Delete</button>
-    </form>
-</div>
-{% endfor %}
--->
 </body>
 </html>

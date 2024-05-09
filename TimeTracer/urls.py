@@ -21,7 +21,7 @@ from events.views import events, week, day
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home/', home, name='home'),
+    path('', home, name='home'),
     #path('', day, name='day'),
     path('users/', include('users.urls', namespace='users')),
 

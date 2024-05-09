@@ -1,7 +1,7 @@
 # views.py
 from django.shortcuts import render, redirect
 from .forms import EventForm, ViewTypeForm, YEARS, DateSelectionForm
-from .models import events as Event
+from .models import Event as Event
 from django.utils import timezone
 from datetime import datetime
 from calendar import monthrange
@@ -13,14 +13,16 @@ def week_view(request, select_week):
     current_year = timezone.now().year
 
     if 'week_to_show' in request.GET:
-        selected_month = request.GET.get('selected_month', None)
-        selected_year = request.GET.get('selected_year', None)
+        selected_month = int(request.GET.get('selected_month', current_month))
+        selected_year = int(request.GET.get('selected_year', current_year))
         if selected_month is None:
             current_month = timezone.now().month
+            selected_month = current_month
         else:
             current_month = int(selected_month)
         if selected_year is None:
             current_year = timezone.now().year
+            selected_year = current_year
         else:
             current_year = int(selected_year)
         selected_week = int(request.GET.get('select_week', select_week))
@@ -52,8 +54,10 @@ def week_view(request, select_week):
     options = []
     for number in range(week_counter):
         options.append({'value': f'{number + 1}', 'label': f'{number + 1}'})
-    context = {'current_month': current_month,
-               'current_year': YEARS[YEARS.index(name)][1],
+    hours = [f"{hour:02d}:00" for hour in range(1, 25)]
+
+    context = {'current_month': current_month, 'form': form, 'events': events,
+               'current_year': YEARS[YEARS.index(name)][1], 'hours': hours,
                'days_of_month': days_of_month, 'current_week': current_week,
                'options': options, 'select_week': selected_week}
     return context
@@ -98,9 +102,12 @@ def events(request, view_type='month'):
 
         events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month,
                                       user=request.user)
-        context = {'form': form, 'events': events, 'current_month': current_month,
-                   'current_year': current_year,
-                   'days_of_month': days_of_month}
+        month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
+                 'Сентябрь', 'Август', 'Ноябрь', 'Декабрь']
+
+        context = {'form': form, 'events': events, 'current_month': month[current_month - 1],
+                   'current_year': current_year, 'selected_year': selected_year,
+                   'days_of_month': days_of_month, 'selected_month': month[selected_month - 1]}
         return context
 
     if request.method == 'POST':
@@ -162,11 +169,12 @@ def events(request, view_type='month'):
 
     events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month, user=request.user)
     context = {'form': form, 'events': events, 'current_month': current_month, 'current_year': current_year,
-               'days_of_month': days_of_month, 'flag_existence': flag_existence}
+               'days_of_month': days_of_month}
     return render(request, 'events/events.html', context)
 
 
 def week(request, select_week='1'):
+
     if request.method == 'POST':
         if 'my_button' in request.POST:
             return redirect('home')
@@ -238,12 +246,12 @@ def day(request):
 
         form = EventForm()
 
-    current_month = timezone.now().month
-    current_year = timezone.now().year
+    current_month = int(timezone.now().month)
+    current_year = int(timezone.now().year)
 
     if 'week_to_show' in request.GET:
-        selected_month = request.GET.get('selected_month', None)
-        selected_year = request.GET.get('selected_year', None)
+        selected_month = request.GET.get('selected_month', current_month)
+        selected_year = request.GET.get('selected_year', current_year)
         if selected_month is None:
             current_month = timezone.now().month
         else:
@@ -278,6 +286,13 @@ def day(request):
             week_of_month.append(None)
         days_of_month.append(week_of_month)
 
-    calendar_data = {'form': form, 'form_day': form_day, 'events': events, 'current_month': current_month,
-                     'current_year': YEARS[YEARS.index(name)][1], 'days_of_month': days_of_month}
+    #events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month,
+                                 # user=request.user)
+    month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
+             'Сентябрь', 'Август', 'Ноябрь', 'Декабрь']
+    hours = [f"{hour:02d}:00" for hour in range(1, 25)]
+
+    calendar_data = {'form': form, 'form_day': form_day, 'events': events, 'current_month': month[current_month - 1],
+                     'current_year': YEARS[YEARS.index(name)][1], 'days_of_month': days_of_month,
+                     'hours': hours}
     return render(request, 'events/day.html', calendar_data)
