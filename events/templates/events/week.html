@@ -330,7 +330,7 @@
                 {% for day in current_week %}
                 <td><!--Добавление события в ячейку-->
                     {% for event in events %}
-                    {% if day.date == event.date_start.date %}
+                    {% if day.date == event.date_start %}
                     <div class="event" data-title="{{ event.description }}">
                         {{ event.name }}
                     </div>
