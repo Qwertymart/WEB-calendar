@@ -1,14 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Event(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events_created')
     name = models.CharField(max_length=50, verbose_name='Имя')
     date_start = models.DateField(verbose_name='Дата начала события')
     time_start = models.TimeField(verbose_name='Время начала события')
     date_finish = models.DateField(verbose_name='Дата окончания события', blank=True, null=True)
     time_finish = models.TimeField(verbose_name='Время окончания события')
-    description = models.CharField(max_length=200, verbose_name='Описание')
+    description = models.CharField(max_length=200, verbose_name='Описание', blank=True)
 
     class Meta:
         verbose_name = "Event"
@@ -18,6 +20,8 @@ class Event(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        if not self.time_start:
+            self.time_start = '00:00:00'
         if self.date_start and not self.date_finish:
             self.date_finish = self.date_start
         if self.time_start and not self.time_finish:
@@ -28,6 +32,7 @@ class Event(models.Model):
 
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='notifications', blank=True)
     text = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)

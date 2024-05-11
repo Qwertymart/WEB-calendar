@@ -5,6 +5,7 @@ from .models import Event as Event
 from .models import Notification
 from django.utils import timezone
 from datetime import datetime, timedelta
+from django.http import JsonResponse
 from calendar import monthrange
 
 from langchain.schema import HumanMessage, SystemMessage
@@ -96,15 +97,16 @@ def events(request, view_type='month'):
     for event in user_events:
 
         date_start_datetime = datetime.combine(event.date_start, event.time_start)
-        now_with_timezone = (timezone.now())
+        now_with_timezone = timezone.localtime(timezone.now())
         date_start_aware = date_start_datetime.replace(tzinfo=timezone.utc)
         time_difference = date_start_aware - now_with_timezone
 
         if time_difference <= timedelta(hours=1) and time_difference.total_seconds() > 0:
-            notification_time = event.date_start - timedelta(hours=1)
-            notification = Notification(user=request.user, text=f"Время начала события '{event.name}' через час",
-                                        created_at=notification_time)
-            notification.save()
+            if not Notification.objects.filter(user=request.user, event=event).exists():
+                notification_time = event.date_start - timedelta(hours=1)
+                notification = Notification(user=request.user, text=f"Время начала события '{event.name}' через час",
+                                            created_at=notification_time, event=event)
+                notification.save()
 
     def month_view():
         form = EventForm()
@@ -143,6 +145,8 @@ def events(request, view_type='month'):
                    'notification': notification}
         return context
 
+    description_event = ''
+
     if request.method == 'POST':
         if 'my_button' in request.POST:
             return redirect('home')
@@ -150,22 +154,27 @@ def events(request, view_type='month'):
             event_id = request.POST.get('delete_event_id')
             event = Event.objects.get(id=event_id)
             event.delete()  # Удаляем событие
-            return redirect('/events')  # Перенаправляем обратно на страницу событий после удаления
-        else:
+            return redirect('/events')  # Перенаправляем обратно на страницу событий после удалени
+            # я
+        description_event = None  # По умолчанию значение None
+
+        if 'description' in request.POST:
             event_name = request.POST.get('name', None)
             messages.append(HumanMessage(content=event_name))
             res = chat(messages)
             messages.append(res)
             description_event = res.content
+            return JsonResponse({'event_name': event_name, 'description_event': description_event})
 
+        elif 'save_button' in request.POST:
             form = EventForm(request.POST)
-
             if form.is_valid():
                 event = form.save(commit=False)
                 event.user = request.user
-                event.description = description_event
+                event.description = description_event  # Используем переменную description_event
                 event.save()
                 return redirect('/events')
+
 
     else:  # else для method GET
         view_type = request.GET.get('view type', view_type)
