@@ -105,18 +105,20 @@
             color:#FFF;
         }
         <!--2 штучки для уведомлений-->
-        .mes{
-            display: none;
-            background-color:#3A3A3F;
-            border: 1px solid wigth;
-            z-index:10;
-            width: 300px; height:500px;
-            position: absolute;
-            right: 270px; top: 40px;
-        }
-        .mes-button{
+        .button {
+            width: 100px;
+            height: 50px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            z-index:1;
+        }
+        .popup {
+            overflow: auto;
+            display:none;
+            background-color: #FFF;
+            color:#000;
+            width: 150px; height:100px;
+            z-index: 10;
 
         }
     </style>
@@ -152,23 +154,23 @@
         {% endif %}
     </div>
     <!--Уведомления-->
-    <!--<div class="shapka">
-        <button><img src="{% static 'events/img/png-clipart-bell-bell.png' %}" alt="bell-bell"
-           width="50px" class="mes-button" onclick="openmes()"></button>
-    </div>
-    <div class="mes" id="mess">
-        <p>pp</p>
-        <button type="button" onclick="closemes()">Закрыть</button>
-    </div>
+    <div class="shapka">
+    <button class="button" onclick="togglePopup()">Уведомления</button>
+    <div class="popup" id="popup">
+            {% for not in notification %}
+            {{ not.text }} {{ not.created_at }}
+            {% endfor %}
+    </div></div>
     <script>
-    function openmes() {
-      document.getElementById("mess").style.display = "block";
-    }
-
-    function closemes() {
-      document.getElementById("mess").style.display = "none";
-    }
-    </script>-->
+        function togglePopup() {
+            var popup = document.getElementById("popup");
+            if (popup.style.display === "none") {
+                popup.style.display = "block";
+            } else {
+                popup.style.display = "none";
+            }
+        }
+    </script>
     <!--Для выхода-->
     <div class="shapka">
         <form method="GET">
@@ -241,19 +243,41 @@
             <label for="id_date_start">Start Date:</label>
             <input type="date" id="id_date_start" name="date_start">
             <br>
+            <br>
+            <label for="id_time_start">Start time:</label>
+            <input type="time" id="id_time_start" name="time_start">
+            <br>
             <label for="id_date_finish">Finish Date:</label>
             <input type="date" id="id_date_finish" name="date_finish">
             <br>
-            <label for="id_description">Description:</label>
-            {{ form.description }}
             <br>
-            <label for="id_participants">Participants:</label>
-            {{ form.participants }}
+            <label for="id_time_finish">Finish time:</label>
+            <input type="time" id="id_time_finish" name="time_finish">
+            <br>
+            <label for="id_description">Description:</label>
+            <button onclick="opendis()"> Добавить описание</button>
+            <div class="form-popup" id="dis">
+                <h4>Напиши своё описание</h4>
+                {{ form.description }}
+                <br>
+                <h4>вариант:</h4> вариант гпт
+                <br>
+                <button onclick="closedis()">Без описания</button>
+            </div>
             <br>
             <button type="submit">Добавить</button>
             <button type="button" onclick="closeFor()">Закрыть</button>
         </form>
     </div>
+    <script>
+    function opendis() {
+      document.getElementById("dis").style.display = "block";
+    }
+
+    function closedis() {
+      document.getElementById("dis").style.display = "none";
+    }
+    </script>
     <script>
     function openFor() {
       document.getElementById("myForm").style.display = "block";
@@ -264,33 +288,27 @@
     }
     </script>
     <!--Для удаления событий-->
-    <button class="open-button" onclick="openForm()">Удалить событие</button>
-    <div class="form-popup" id="delete">
+    <button class="open-button" onclick="del()">Удалить событие</button>
+    <div class="del" id="delete">
         {% for event in events %}
-            <div>
-                <h3>{{ event.name }}</h3>
-                <h3>{{ event.user }}</h3>
-                <p><strong>Start Date:</strong> {{ event.date_start }}</p>
-                <p><strong>Finish Date:</strong> {{ event.date_finish }}</p>
-                <p><strong>Description:</strong> {{ event.description }}</p>
+        <h3>{{ event.name }}</h3>
+        <h3>{{ event.user }}</h3>
+        <p><strong>Start Date:</strong> {{ event.date_start }}</p>
+        <p><strong>Finish Date:</strong> {{ event.date_finish }}</p>
+        <p><strong>Description:</strong> {{ event.description }}</p>
 
-                <form method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="delete_event_id" value="{{ event.id }}">
-                    <button type="submit">Delete</button>
-                </form>
-        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="delete_event_id" value="{{ event.id }}">
+            <button type="submit">Delete</button>
+        </form>
         {% endfor %}
-        <button type="button" onclick="closeForm()">Закрыть</button>
     </div>
     <script>
-    function openForm() {
-      document.getElementById("delete").style.display = "block";
-    }
-
-    function closeForm() {
-      document.getElementById("delete").style.display = "none";
-    }
+        function del() {
+                var del = document.getElementById("delete");
+                del.classList.toggle("show");
+            }
     </script>
     </aside>
 

@@ -27,8 +27,8 @@ def week_view(request, select_week):
     current_year = timezone.now().year
 
     if 'week_to_show' in request.GET:
-        selected_month = int(request.GET.get('selected_month', current_month))
-        selected_year = int(request.GET.get('selected_year', current_year))
+        selected_month = int(request.GET.get('selected_month', None))
+        selected_year = int(request.GET.get('selected_year', None))
         if selected_month is None:
             current_month = timezone.now().month
             selected_month = current_month

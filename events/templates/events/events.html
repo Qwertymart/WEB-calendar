@@ -66,8 +66,8 @@
         }
         .shapka{
             display: inline-block;
-            margin-right:130px;
-            wight: 200px;
+            margin-right:140px;
+            wight: 300px;
             margin-top:-10px;
         }
         .dis{
@@ -150,7 +150,6 @@
         {% if selected_year and selected_month %}
             {{ selected_month }} {{ selected_year }}
         {% endif %}
-
     </div>
     <!-- для выбора отображения календаря-->
     <div class="shapka" style="text-align:right">
@@ -275,13 +274,10 @@
             <button type="button" onclick="closeFor()">Закрыть</button>
         </form>
     </div>
-
     <script>
-
     function opendis() {
       document.getElementById("dis").style.display = "block";
     }
-
     function closedis() {
       document.getElementById("dis").style.display = "none";
     }
@@ -290,7 +286,6 @@
     function openFor() {
       document.getElementById("myForm").style.display = "block";
     }
-
     function closeFor() {
       document.getElementById("myForm").style.display = "none";
     }
