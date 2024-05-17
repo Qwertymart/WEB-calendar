@@ -66,16 +66,15 @@
         }
         .shapka{
             display: inline-block;
-            margin-right:140px;
+            margin-right:130px;
             wight: 300px;
             margin-top:-10px;
         }
         .dis{
-
             font-size: 15px;
             border-left:1px solid red;
             padding-left:5px;
-            margin-top:3px;
+            margin-top:0px;
         }
         .del{
             display: none;
@@ -122,7 +121,7 @@
             border: 1px solid #FFF; /* Параметры рамки */
             color:#FFF;
         }
-        <!--2 штучки для уведомлений-->
+        <!--3 штучки для уведомлений-->
         .button {
             width: 100px;
             height: 50px;
@@ -135,10 +134,10 @@
             display:none;
             background-color: #FFF;
             color:#000;
-            width: 150px; height:100px;
-            z-index: 10;
-
+            width: 170px; height:80px;
+            margin-left:-60px;
         }
+
     </style>
 </head>
 <body>
@@ -176,7 +175,9 @@
     <button class="button" onclick="togglePopup()">Уведомления</button>
     <div class="popup" id="popup">
             {% for not in notification %}
-            {{ not.text }} {{ not.created_at }}
+                <div class="not">
+                    {{ not.text }} {{ not.created_at }}
+                </div>
             {% endfor %}
     </div></div>
     <script>
@@ -293,11 +294,13 @@
     <!--Для удаления событий-->
     <button class="open-button" onclick="del()">Удалить событие</button>
     <div class="del" id="delete">
+
         {% for event in events %}
+        {% if month == event.date_start.month %}
         <h3>{{ event.name }}</h3>
         <h3>{{ event.user }}</h3>
-        <p><strong>Start Date:</strong> {{ event.date_start }}</p>
-        <p><strong>Finish Date:</strong> {{ event.date_finish }}</p>
+        <p><strong>Start Date:</strong> {{ event.date_start }} {{ event.time_start }}</p>
+        <p><strong>Finish Date:</strong> {{ event.date_finish }} {{ event.time_finish }}</p>
         <p><strong>Description:</strong> {{ event.description }}</p>
 
         <form method="POST">
@@ -305,6 +308,7 @@
             <input type="hidden" name="delete_event_id" value="{{ event.id }}">
             <button type="submit">Delete</button>
         </form>
+        {% endif %}
         {% endfor %}
     </div>
     <script>

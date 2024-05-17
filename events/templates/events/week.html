@@ -60,14 +60,30 @@
             border:none;
             background-color:#2F303A;
             width:10px;
-            padding-right:10px;
+            padding-right:0px;
             valign:bottom;
         }
         .shapka{
             display: inline-block;
-            margin-right:140px;
+            margin-right:120px;
             wight: 300px;
-            margin-top:-10px;
+            margin-top:-7px;
+        }
+        .dis{
+            font-size: 15px;
+            border-left:1px solid red;
+            padding-left:5px;
+            margin-top:3px;
+        }
+        /* для удаления*/
+        .del{
+            display: none;
+            top: 60px;
+            background-color:#3A3A3F;
+            border: 1px solid black;
+        }
+        .show {
+            display: block;
         }
         /* 2 штучки дял открытия формы добавления события*/
         .open-button {
@@ -92,6 +108,7 @@
             width:100px;
             font-size: 20px;
             text-align:left;
+            overflow:hidden;
         }
         .event:hover::after {
             content: attr(data-title); /* Выводим текст */
@@ -104,7 +121,7 @@
             border: 1px solid #FFF; /* Параметры рамки */
             color:#FFF;
         }
-        <!--2 штучки для уведомлений-->
+        <!--3 штучки для уведомлений-->
         .button {
             width: 100px;
             height: 50px;
@@ -117,9 +134,8 @@
             display:none;
             background-color: #FFF;
             color:#000;
-            width: 150px; height:100px;
-            z-index: 10;
-
+            width: 170px; height:80px;
+            margin-left:-60px;
         }
     </style>
 </head>
@@ -129,8 +145,8 @@
     <img src="{% static 'events/img/image_2024-04-29_11-20-12.png' %}" alt="pict" width="100px"></div>
     <!-- для показа даты, которую выбрали-->
     <div style="text-align:left" class="shapka">
-        {% if selected_year and selected_month and select_week %}
-        {{ selected_month }} {{ selected_year }} {{ selected_week }} неделя
+        {% if selected_year and selected_month %}
+        {{ selected_month }} {{ selected_year }} <br> {{ select_week }} неделя
         {% endif %}
     </div>
     <!-- для выбора отображения календаря-->
@@ -158,7 +174,9 @@
     <button class="button" onclick="togglePopup()">Уведомления</button>
     <div class="popup" id="popup">
             {% for not in notification %}
-            {{ not.text }} {{ not.created_at }}
+                <div class="not">
+                    {{ not.text }} {{ not.created_at }}
+                </div>
             {% endfor %}
     </div></div>
     <script>
@@ -273,7 +291,6 @@
     function opendis() {
       document.getElementById("dis").style.display = "block";
     }
-
     function closedis() {
       document.getElementById("dis").style.display = "none";
     }
@@ -282,7 +299,6 @@
     function openFor() {
       document.getElementById("myForm").style.display = "block";
     }
-
     function closeFor() {
       document.getElementById("myForm").style.display = "none";
     }
@@ -291,17 +307,20 @@
     <button class="open-button" onclick="del()">Удалить событие</button>
     <div class="del" id="delete">
         {% for event in events %}
+        {% for day in current_week %}
+        {% if day.day == event.date_start.day %}
         <h3>{{ event.name }}</h3>
         <h3>{{ event.user }}</h3>
-        <p><strong>Start Date:</strong> {{ event.date_start }}</p>
-        <p><strong>Finish Date:</strong> {{ event.date_finish }}</p>
+        <p><strong>Start Date:</strong> {{ event.date_start }} {{ event.time_start }}</p>
+        <p><strong>Finish Date:</strong> {{ event.date_finish }} {{ event.time_finish }}</p>
         <p><strong>Description:</strong> {{ event.description }}</p>
-
         <form method="POST">
             {% csrf_token %}
             <input type="hidden" name="delete_event_id" value="{{ event.id }}">
             <button type="submit">Delete</button>
         </form>
+        {% endif %}
+        {% endfor %}
         {% endfor %}
     </div>
     <script>
@@ -311,11 +330,8 @@
             }
     </script>
     </aside>
-
     <main>
         <!--вот тут уже для таблиц недели-->
-        {{ events }}
-        {{ current_month }}
     <table>
         <thead class="thead">
         <tr>
@@ -344,17 +360,17 @@
                 {% for hour in hours %}
                 <td valign="bottom" class="time">
                     {% if hour %}
-                        {{ hour }}
+                        {{ hour.time }}
                     {% endif %}
                 </td>
                 {% for day in current_week %}
                 <td><!--Добавление события в ячейку-->
                     {% for event in events %}
-                    {% if day.date == event.date_start %}
-                    <div class="event" data-title="{{ event.description }}">
-                        {{ event.name }}
-                    </div>
-                    {% endif %}
+                        {% if day.date == event.date_start and hour.time == event.time_start %}
+                            <div class="event" data-title="{{ event.description }}">
+                                <div class="dis">{{ event.name }}</div>
+                            </div>
+                        {% endif %}
                     {% endfor %}
                 </td>
                 {% endfor %}

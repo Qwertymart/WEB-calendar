@@ -65,9 +65,24 @@
         }
         .shapka{
             display: inline-block;
-            margin-right:140px;
+            margin-right:130px;
             wight: 300px;
             margin-top:-10px;
+        }
+        .dis{
+            font-size: 20px;
+            border-left:1px solid red;
+            padding-left:5px;
+            margin-top:0px;
+        }
+        .del{
+            display: none;
+            top: 60px;
+            background-color:#3A3A3F;
+            border: 1px solid black;
+        }
+        .show {
+            display: block;
         }
         /* 2 штучки дял открытия формы добавления события*/
         .open-button {
@@ -89,13 +104,15 @@
         .event{
             color:#D8C26E;
             height:20px;
-            width:100px;
+            width:300px;
             font-size: 20px;
             text-align:left;
+            overflow:hidden;
+            margin-top:0px;
         }
         .event:hover::after {
             content: attr(data-title); /* Выводим текст */
-            margin-top:20px; margin-left: -20px;
+            margin-top:0px; margin-left: -20px;
             width: 155px; height: 100px;
             position: absolute;/* Положение подсказки */
             z-index: 1; /* Отображаем подсказку поверх других элементов */
@@ -104,7 +121,7 @@
             border: 1px solid #FFF; /* Параметры рамки */
             color:#FFF;
         }
-        <!--2 штучки для уведомлений-->
+        <!--3 штучки для уведомлений-->
         .button {
             width: 100px;
             height: 50px;
@@ -117,8 +134,8 @@
             display:none;
             background-color: #FFF;
             color:#000;
-            width: 150px; height:100px;
-            z-index: 10;
+            width: 170px; height:80px;
+            margin-left:-60px;
         }
     </style>
 </head>
@@ -128,8 +145,8 @@
     <img src="{% static 'events/img/image_2024-04-29_11-20-12.png' %}" alt="pict" width="100px"></div>
     <!-- для показа даты, которую выбрали-->
     <div style="text-align:left" class="shapka">
-        {% if selected_date %}
-            {{ selected_date }}
+        {% if current_month and current_year %}
+            {{ current_month }} {{ current_year }}
         {% endif %}
     </div>
     <!-- для выбора отображения календаря-->
@@ -157,7 +174,9 @@
     <button class="button" onclick="togglePopup()">Уведомления</button>
     <div class="popup" id="popup">
             {% for not in notification %}
-            {{ not.text }} {{ not.created_at }}
+                <div class="not">
+                    {{ not.text }} {{ not.created_at }}
+                </div>
             {% endfor %}
     </div></div>
     <script>
@@ -245,17 +264,18 @@
     <button class="open-button" onclick="del()">Удалить событие</button>
     <div class="del" id="delete">
         {% for event in events %}
+        {% if current_day == event.date_start.day and month == event.date_start.month %}
         <h3>{{ event.name }}</h3>
         <h3>{{ event.user }}</h3>
-        <p><strong>Start Date:</strong> {{ event.date_start }}</p>
-        <p><strong>Finish Date:</strong> {{ event.date_finish }}</p>
+        <p><strong>Start Date:</strong> {{ event.date_start }} {{ event.time_start }}</p>
+        <p><strong>Finish Date:</strong> {{ event.date_finish }} {{ event.time_finish }}</p>
         <p><strong>Description:</strong> {{ event.description }}</p>
-
         <form method="POST">
             {% csrf_token %}
             <input type="hidden" name="delete_event_id" value="{{ event.id }}">
             <button type="submit">Delete</button>
         </form>
+        {% endif %}
         {% endfor %}
     </div>
     <script>
@@ -268,88 +288,32 @@
 
     <main>
         <!--вот тут уже для таблиц дня-->
-        {{ current_year }} {{ current_month }} {{ current_day }}
     <table>
         <thead class="thead">
         <tr>
             <th></th>
-            <th valign="left">Yors select days</th>
+            <th valign="left">{{ current_day }}</th>
         </tr>
         </thead>
         <tbody class="tbody">
             {% for hour in hours %}
             <tr>
-                <td valign="bottom" class="time">{{ hour }}</td>
-                <td></td>
+                <td valign="bottom" class="time">{{ hour.time }}</td>
+                <td>
+                    {% for event in events %}
+                    {% if current_day == event.date_start.day and month == event.date_start.month %}
+                    {% if current_year == event.date_start.year and hour.time == event.time_start %}
+                    <div class="event" data-title="{{ event.description }}">
+                        <div class="dis">{{ event.name }}</div>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </main>
-<!--<h1>Add Event</h1>
-<form method="POST">
-    {% csrf_token %}
-    <label for="id_name">Name:</label>
-    {{ form.name }}
-    <br>
-    <label for="id_date_start">Start Date:</label>
-    <input type="date" id="id_date_start" name="date_start">
-    <br>
-    <label for="id_date_finish">Finish Date:</label>
-    <input type="date" id="id_date_finish" name="date_finish">
-    <br>
-    <label for="id_description">Description:</label>
-    {{ form.description }}
-    <br>
-    <label for="id_participants">Participants:</label>
-    {{ form.participants }}
-    <br>
-    <button type="submit">Add Event</button>
-</form>
-
-<h2>Select view type</h2>
-<form method="GET">
-    {% csrf_token %}
-    {{ ViewTypeForm }}
-    <select name="view type">
-        <option value="month">month</option>
-        <option value="week">week</option>
-        <option value="day">day</option>
-    </select>
-    <input type = "submit" value = "Submit" name="view_button">
-</form>
-
-
-<form name="day_selection" method="POST">
-    {% csrf_token %}
-        {{ form_day.as_p }}
-        <button type="submit">Select</button>
-</form>
-{% if selected_date %}
-        <p>Selected Date: {{ selected_date }}</p>
-    {% endif %}
-{% if current_month and current_year %}
-<h2>{{ current_day }}</h2>
-
-{% endif %}
-
-{% for event in events %}
-<div>
-    <h3>{{ event.name }}</h3>
-    <h3>{{ event.user }}</h3>
-    <p><strong>Start Date:</strong> {{ event.date_start }}</p>
-    <p><strong>Finish Date:</strong> {{ event.date_finish }}</p>
-    <p><strong>Description:</strong> {{ event.description }}</p>
-    <p><strong>Participants:</strong>
-
-    </p>
-    <form method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="delete_event_id" value="{{ event.id }}">
-        <button type="submit">Delete</button>
-    </form>
-</div>
-{% endfor %}-->
 </body>
-
 </html>

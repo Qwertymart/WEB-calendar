@@ -55,18 +55,26 @@ def week_view(request, select_week, selected_month, selected_year):
     options = []
     for number in range(week_counter):
         options.append({'value': f'{number + 1}', 'label': f'{number + 1}'})
-    hours = [f"{hour:02d}:00" for hour in range(1, 25)]
+    hours_str = [f"{hour:02d}:00" for hour in range(1, 24)]
+    hours_str.append('00:00')
+    hours = []
+    for i in hours_str:
+        hours.append(datetime.strptime(i, '%H:%M'))
     notification = Notification.objects.filter(user=request.user)
     events = Event.objects.filter(
         date_start__year=selected_year,
         date_start__month=selected_month,
         user=request.user
     )
-    context = {'current_month': selected_month, 'form': form, 'events': events,
-               'current_year': YEARS[YEARS.index(name)][1], 'hours': hours,
+    month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
+             'Сентябрь', 'Август', 'Ноябрь', 'Декабрь']
+    current_year = timezone.now().year
+    current_month = timezone.now().month
+    context = {'selected_month': month[selected_month - 1], 'form': form, 'events': events,
+               'selected_year': YEARS[YEARS.index(name)][1], 'hours': hours,
                'days_of_month': days_of_month, 'current_week': current_week,
-               'options': options, 'select_week': selected_week,
-               'notification': notification}
+               'options': options, 'select_week': selected_week, 'current_month': month[current_month - 1],
+               'notification': notification, 'current_year': current_year}
     print('week_view done')
     return context
 
@@ -133,7 +141,7 @@ def events(request, view_type='month'):
         context = {'form': form, 'events': events, 'current_month': month[current_month - 1],
                    'current_year': current_year, 'selected_year': selected_year,
                    'days_of_month': days_of_month, 'selected_month': month[selected_month - 1],
-                   'notification': notification}
+                   'notification': notification, 'month': selected_month}
         return context
 
     description_event = ''
@@ -207,8 +215,12 @@ def events(request, view_type='month'):
 
     events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month, user=request.user)
     notification = Notification.objects.filter(user=request.user)
-    context = {'form': form, 'events': events, 'current_month': current_month, 'current_year': current_year,
-               'days_of_month': days_of_month, 'notification': notification}
+    month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
+             'Сентябрь', 'Август', 'Ноябрь', 'Декабрь']
+    context = {'form': form, 'events': events, 'current_month': month[current_month - 1],
+               'current_year': current_year, 'selected_month': month[selected_month - 1],
+               'selected_year': selected_year,
+               'days_of_month': days_of_month, 'notification': notification, 'month': selected_month}
     return render(request, 'events/events.html', context)
 
 
@@ -343,13 +355,18 @@ def day(
                                   user=request.user)
     month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
              'Сентябрь', 'Август', 'Ноябрь', 'Декабрь']
-    hours = [f"{hour:02d}:00" for hour in range(1, 25)]
+    hours_str = [f"{hour:02d}:00" for hour in range(1, 24)]
+    hours_str.append('00:00')
+    hours = []
+    for i in hours_str:
+        hours.append(datetime.strptime(i, '%H:%M'))
 
     notification = Notification.objects.filter(user=request.user)
     # YEARS[YEARS.index(name)][1]
     calendar_data = {
         'form': form, 'form_day': form_day, 'events': events,
         'current_month': month[selected_month - 1],
+        'month': selected_month,
         'current_year': selected_year, 'days_of_month': days_of_month,
         'current_day': selected_day,
         'hours': hours, 'notification': notification}
