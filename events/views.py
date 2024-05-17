@@ -25,18 +25,14 @@ messages = [
 def week_view(request, select_week, selected_month, selected_year):
     form = EventForm()
     if request.method == 'GET':
-
-
         # Проверка на передачу года, месяца и недели
         selected_month = int(request.GET.get('selected_month', selected_month))
         selected_year = int(request.GET.get('selected_year', selected_year))
         selected_week = int(request.GET.get('select_week', select_week))
 
-
     for value in YEARS:
         if value[1] == str(selected_year):
             name = value
-
 
     first_weekday, num_days = monthrange(selected_year, selected_month)
     num_padding_days = (first_weekday) % 7
@@ -265,19 +261,26 @@ def week(
     template_name = 'events/week.html'
 
     if 'week_to_show' in request.GET:
-
         return redirect('week_calendar_selected_week', selected_year, selected_month, selected_week)
 
     return render(request, template_name, calendar_data)
 
 
-def day(request):
+def day(
+        request,
+        selected_month=timezone.now().month,
+        selected_year=timezone.now().year,
+        selected_day=timezone.now().day
+):
     if request.method == 'POST':
         form_day = DateSelectionForm(request.POST)
         if form_day.is_valid():
             selected_date = form_day.cleaned_data['selected_date']
+            selected_year = selected_date.year if selected_date.year is not None else selected_year
+            selected_month = selected_date.month if selected_date.month is not None else selected_month
+            selected_day = selected_date.day if selected_date.day is not None else selected_day
+
             day_of_week = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su']
-            print(selected_date)
         if 'my_button' in request.POST:
             return redirect('home')
         elif 'delete_event_id' in request.POST:  # Проверяем, было ли отправлено сообщение об удалении
@@ -285,6 +288,8 @@ def day(request):
             event = Event.objects.get(id=event_id)
             event.delete()  # Удаляем событие
             return redirect('day')  # Перенаправляем обратно на страницу событий после удаления
+        elif 'day_select' in request.POST:
+            return redirect('day_selected_day', selected_year, selected_month, selected_day)
         else:
             event_name = request.POST.get('name', None)
             messages.append(HumanMessage(content=event_name))
@@ -313,28 +318,18 @@ def day(request):
 
         form = EventForm()
 
-    current_month = int(timezone.now().month)
-    current_year = int(timezone.now().year)
-    selected_month = request.GET.get('selected_month', current_month)
-    selected_year = request.GET.get('selected_year', current_year)
+    # for element in YEARS:
+    #     if element[0] == str(selected_year):
+    #         name = element
 
-    for value in YEARS:
-        if value[1] == str(timezone.now().year):
-            name = (value[0], str(timezone.now().year))
-
-    for element in YEARS:
-        if element[0] == str(current_year):
-            name = element
-
-    current_year = int(YEARS[YEARS.index(name)][1])
-    first_weekday, num_days = monthrange(current_year, current_month)
+    first_weekday, num_days = monthrange(selected_year, selected_month)
     num_padding_days = (first_weekday) % 7
     days_of_month = []
     week_of_month = []
     for i in range(num_padding_days):
         week_of_month.append(None)
     for day_of_month in range(1, num_days + 1):
-        week_of_month.append(datetime(current_year, current_month, day_of_month))
+        week_of_month.append(datetime(selected_year, selected_month, day_of_month))
         if len(week_of_month) == 7:
             days_of_month.append(week_of_month)
             week_of_month = []
@@ -343,15 +338,20 @@ def day(request):
             week_of_month.append(None)
         days_of_month.append(week_of_month)
 
-    # events = Event.objects.filter(date_start__year=selected_year, date_start__month=selected_month,
-    # user=request.user)
+    events = Event.objects.filter(date_start__year=selected_year,
+                                  date_start__month=selected_month,
+                                  user=request.user)
     month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
              'Сентябрь', 'Август', 'Ноябрь', 'Декабрь']
     hours = [f"{hour:02d}:00" for hour in range(1, 25)]
 
     notification = Notification.objects.filter(user=request.user)
+    # YEARS[YEARS.index(name)][1]
+    calendar_data = {
+        'form': form, 'form_day': form_day, 'events': events,
+        'current_month': month[selected_month - 1],
+        'current_year': selected_year, 'days_of_month': days_of_month,
+        'current_day': selected_day,
+        'hours': hours, 'notification': notification}
 
-    calendar_data = {'form': form, 'form_day': form_day, 'events': events, 'current_month': month[current_month - 1],
-                     'current_year': YEARS[YEARS.index(name)][1], 'days_of_month': days_of_month,
-                     'hours': hours, 'notification': notification}
     return render(request, 'events/day.html', calendar_data)
