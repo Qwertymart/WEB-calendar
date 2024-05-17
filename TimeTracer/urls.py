@@ -29,6 +29,7 @@ urlpatterns = [
     path('events/', events, {'view_type': 'month'}, name='events'),
     path('events/week/', week, name='week'),
     path('events/day/', day, name='day'),
+    path('events/day/<int:selected_year>/<int:selected_month>/<int:selected_day>/', day, name='day_selected_day'),
     # Дополнительные маршруты для обработки различных действий или типов отображения
     # path('events/', events, name='month_calendar'),
     # path('events/week/', events, {'view_type': 'week'}, name='week_calendar'),
