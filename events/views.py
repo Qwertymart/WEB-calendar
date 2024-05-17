@@ -5,6 +5,7 @@ from .models import Event as Event
 from .models import Notification
 from django.utils import timezone
 from datetime import datetime, timedelta
+from django.http import JsonResponse
 from calendar import monthrange
 
 from langchain.schema import HumanMessage, SystemMessage
@@ -21,40 +22,30 @@ messages = [
 ]
 
 
-def week_view(request, select_week):
+def week_view(request, select_week, selected_month, selected_year):
     form = EventForm()
-    current_month = timezone.now().month
-    current_year = timezone.now().year
+    if request.method == 'GET':
 
-    if 'week_to_show' in request.GET:
-        selected_month = int(request.GET.get('selected_month', None))
-        selected_year = int(request.GET.get('selected_year', None))
-        if selected_month is None:
-            current_month = timezone.now().month
-            selected_month = current_month
-        else:
-            current_month = int(selected_month)
-        if selected_year is None:
-            current_year = timezone.now().year
-            selected_year = current_year
-        else:
-            current_year = int(selected_year)
+
+        # Проверка на передачу года, месяца и недели
+        selected_month = int(request.GET.get('selected_month', selected_month))
+        selected_year = int(request.GET.get('selected_year', selected_year))
         selected_week = int(request.GET.get('select_week', select_week))
-    else:
-        selected_week = int(select_week)
+
+
     for value in YEARS:
-        if value[1] == str(timezone.now().year):
+        if value[1] == str(selected_year):
             name = value
 
-    current_year = int(YEARS[YEARS.index(name)][1])
-    first_weekday, num_days = monthrange(current_year, current_month)
+
+    first_weekday, num_days = monthrange(selected_year, selected_month)
     num_padding_days = (first_weekday) % 7
     days_of_month = []
     week_of_month = []
     for i in range(num_padding_days):
         week_of_month.append(None)
     for day_of_month in range(1, num_days + 1):
-        week_of_month.append(datetime(current_year, current_month, day_of_month))
+        week_of_month.append(datetime(selected_year, selected_month, day_of_month))
         if len(week_of_month) == 7:
             days_of_month.append(week_of_month)
             week_of_month = []
@@ -70,12 +61,17 @@ def week_view(request, select_week):
         options.append({'value': f'{number + 1}', 'label': f'{number + 1}'})
     hours = [f"{hour:02d}:00" for hour in range(1, 25)]
     notification = Notification.objects.filter(user=request.user)
-
-    context = {'current_month': current_month, 'form': form, 'events': events,
+    events = Event.objects.filter(
+        date_start__year=selected_year,
+        date_start__month=selected_month,
+        user=request.user
+    )
+    context = {'current_month': selected_month, 'form': form, 'events': events,
                'current_year': YEARS[YEARS.index(name)][1], 'hours': hours,
                'days_of_month': days_of_month, 'current_week': current_week,
                'options': options, 'select_week': selected_week,
                'notification': notification}
+    print('week_view done')
     return context
 
 
@@ -96,15 +92,16 @@ def events(request, view_type='month'):
     for event in user_events:
 
         date_start_datetime = datetime.combine(event.date_start, event.time_start)
-        now_with_timezone = (timezone.now())
+        now_with_timezone = timezone.localtime(timezone.now())
         date_start_aware = date_start_datetime.replace(tzinfo=timezone.utc)
         time_difference = date_start_aware - now_with_timezone
 
         if time_difference <= timedelta(hours=1) and time_difference.total_seconds() > 0:
-            notification_time = event.date_start - timedelta(hours=1)
-            notification = Notification(user=request.user, text=f"Время начала события '{event.name}' через час",
-                                        created_at=notification_time)
-            notification.save()
+            if not Notification.objects.filter(user=request.user, event=event).exists():
+                notification_time = event.date_start - timedelta(hours=1)
+                notification = Notification(user=request.user, text=f"Время начала события '{event.name}' через час",
+                                            created_at=notification_time, event=event)
+                notification.save()
 
     def month_view():
         form = EventForm()
@@ -143,6 +140,8 @@ def events(request, view_type='month'):
                    'notification': notification}
         return context
 
+    description_event = ''
+
     if request.method == 'POST':
         if 'my_button' in request.POST:
             return redirect('home')
@@ -150,22 +149,27 @@ def events(request, view_type='month'):
             event_id = request.POST.get('delete_event_id')
             event = Event.objects.get(id=event_id)
             event.delete()  # Удаляем событие
-            return redirect('/events')  # Перенаправляем обратно на страницу событий после удаления
-        else:
+            return redirect('/events')  # Перенаправляем обратно на страницу событий после удалени
+            # я
+        description_event = None  # По умолчанию значение None
+
+        if 'description' in request.POST:
             event_name = request.POST.get('name', None)
             messages.append(HumanMessage(content=event_name))
             res = chat(messages)
             messages.append(res)
             description_event = res.content
+            return JsonResponse({'event_name': event_name, 'description_event': description_event})
 
+        elif 'save_button' in request.POST:
             form = EventForm(request.POST)
-
             if form.is_valid():
                 event = form.save(commit=False)
                 event.user = request.user
-                event.description = description_event
+                event.description = description_event  # Используем переменную description_event
                 event.save()
                 return redirect('/events')
+
 
     else:  # else для method GET
         view_type = request.GET.get('view type', view_type)
@@ -212,7 +216,11 @@ def events(request, view_type='month'):
     return render(request, 'events/events.html', context)
 
 
-def week(request, select_week='1'):
+def week(
+        request, select_week='1',
+        selected_month=timezone.now().month,
+        selected_year=timezone.now().year
+):
     if request.method == 'POST':
         if 'my_button' in request.POST:
             return redirect('home')
@@ -249,11 +257,16 @@ def week(request, select_week='1'):
                 return redirect('week')  # Летим в week, чтобы уже работать в функции week на новой странице
             elif temp == 'day':
                 return redirect('day')  # Летим в day, чтобы уже работать в функции day на новой странице
+
     selected_week = request.GET.get('select_week', select_week)
-    calendar_data = week_view(request, selected_week)
+    selected_month = request.GET.get('selected_month', selected_month)
+    selected_year = request.GET.get('selected_year', selected_year)
+    calendar_data = week_view(request, selected_week, selected_month, selected_year)
     template_name = 'events/week.html'
+
     if 'week_to_show' in request.GET:
-        return redirect('week_calendar_selected_week', selected_week)
+
+        return redirect('week_calendar_selected_week', selected_year, selected_month, selected_week)
 
     return render(request, template_name, calendar_data)
 
@@ -302,18 +315,8 @@ def day(request):
 
     current_month = int(timezone.now().month)
     current_year = int(timezone.now().year)
-
-    if 'week_to_show' in request.GET:
-        selected_month = request.GET.get('selected_month', current_month)
-        selected_year = request.GET.get('selected_year', current_year)
-        if selected_month is None:
-            current_month = timezone.now().month
-        else:
-            current_month = int(selected_month)
-        if selected_year is None:
-            current_year = timezone.now().year
-        else:
-            current_year = int(selected_year)
+    selected_month = request.GET.get('selected_month', current_month)
+    selected_year = request.GET.get('selected_year', current_year)
 
     for value in YEARS:
         if value[1] == str(timezone.now().year):

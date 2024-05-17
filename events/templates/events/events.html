@@ -260,7 +260,7 @@
             <input type="time" id="id_time_finish" name="time_finish">
             <br>
             <label for="id_description">Description:</label>
-            <button onclick="opendis()"> Добавить описание</button>
+            <button onclick="opendis()" name="description"> Добавить описание</button>
             <div class="form-popup" id="dis">
                 <h4>Напиши своё описание</h4>
                 {{ form.description }}
@@ -270,7 +270,7 @@
                 <button onclick="closedis()">Без описания</button>
             </div>
             <br>
-            <button type="submit">Добавить</button>
+            <button type="submit" name="save_button">Добавить</button>
             <button type="button" onclick="closeFor()">Закрыть</button>
         </form>
     </div>
