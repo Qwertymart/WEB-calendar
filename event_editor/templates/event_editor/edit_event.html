@@ -1,15 +1,60 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Edit Event</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редакция</title>
+    <style>
+        body{
+            background-color:#2F303A;
+        }
+        button{
+            background-color:#87FF00;
+            border:none;
+            margin-left:40px; margin-top:10px;
+            height:45px; width:120px;
+            border-radius:10px;
+        }
+        .edit{
+            background-color:#555769;
+            color:#FFF;
+            height:600px;
+            width:450px;
+            padding-left:70px;padding-top:20px;
+            border-radius:50px;
+            position:absolute;
+            margin-left:520px;
+            margin-top:100px;
+        }
+        label{
+            float:left;
+            margin-right:5px;
+            height:30px;
+        }
+        input{
+            margin-right:0px;
+            border-radius:10px;
+            height:25px;
+        }
+        h2{
+            padding-left:120px;
+            color:#1C1C1C;
+            margin-top:-10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Edit Event: {{ event.title }}</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" name="save">Save changes</button>
-        <button type="submit" name="delete">Delete</button>
-    </form>
+    <div class="edit">
+        <img hspace="130px" src="{% static 'events/img/image_2024-04-29_11-20-12.png' %}" alt="pict" width="110px">
+        <h2>TimeTracer</h2>
+        <h3>Измени данные события:</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" name="save">Изменить</button>
+            <button type="submit" name="delete">Удалить событие</button>
+        </form>
+    </div>
 </body>
 </html>

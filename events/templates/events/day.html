@@ -57,6 +57,7 @@
             text-decoration: none;
             display: flex;
             color:#000;
+            background-color:#3F414D;
         }
         .week{
             height:15px;
@@ -74,13 +75,7 @@
             wight: 300px;
             margin-top:-10px;
         }
-        .dis{
-            font-size: 20px;
-            border-left:1px solid red;
-            padding-left:5px;
-            margin-top:0px;
-            background-color:#3F414D;
-        }
+
         /* для удаления*/
         .del{
             display: none;
@@ -109,7 +104,7 @@
           background-color:#3A3A3F;
           border: 1px solid black;
         }
-        /* 2 штучки, чтобы при наведении появлялось описание события */
+        /* 3 штучки, чтобы при наведении появлялось описание события */
         .event{
             color:#D8C26E;
             height:20px;
@@ -117,9 +112,15 @@
             font-size: 20px;
             text-align:left;
             overflow:hidden;
-            margin-top:0px;
         }
-        .event:hover::after {
+        .dis{
+            font-size: 20px;
+            border-left:1px solid red;
+            padding-left:5px;
+            margin-top:0px;
+            background-color:#3F414D;
+        }
+        .dis:hover::after {
             content: attr(data-title); /* Выводим текст */
             margin-top:0px; margin-left: -20px;
             width: 155px; height: 100px;
@@ -130,7 +131,7 @@
             border: 1px solid #FFF; /* Параметры рамки */
             color:#FFF;
         }
-        /*2 штучки для уведомлений*/
+        /*3 штучки для уведомлений*/
         .button {
             width: 100px;
             height: 30px;
@@ -146,7 +147,11 @@
             width: 170px; height:80px;
             margin-left:-60px;
         }
-
+        .ved{
+            border-left:2px solid blue;
+            margin-left:4px;
+            margin-top:4px;
+        }
     </style>
 </head>
 <body>
@@ -184,8 +189,8 @@
     <button class="button" onclick="togglePopup()">Уведомления</button>
     <div class="popup" id="popup">
             {% for not in notification %}
-                <div class="not">
-                    {{ not.text }} {{ not.created_at }}
+                <div class="ved">
+                    {{ not.text }} <br>{{ not.created_at }}
                 </div>
             {% endfor %}
     </div></div>
@@ -313,11 +318,11 @@
                     {% for event in events %}
                     {% if current_day == event.date_start.day and month == event.date_start.month %}
                     {% if current_year == event.date_start.year and hour.time == event.time_start %}
-                    <div class="event" data-title="{{ event.description }}">
-                        <a href="https://www.youtube.com" style="display: block">
-                            <div class="dis" onclick="openSettings('set{{ event.id }}')">{{ event.name }}</div></a>
+                    <div class="event" >
+                            <div class="dis" data-title="{{ event.description }}">
+                                <a href="{% url 'edit_event' event.id %}">{{ event.name }}</a>
+                            </div>
                     </div>
-
                     {% endif %}
                     {% endif %}
                     {% endfor %}
@@ -326,13 +331,6 @@
             {% endfor %}
         </tbody>
     </table>
-
-    <script>
-    function changeColor(elementId, color) {
-        document.getElementById(elementId).style.backgroundColor = color;
-    }
-
-    </script>
 </main>
 </body>
 </html>

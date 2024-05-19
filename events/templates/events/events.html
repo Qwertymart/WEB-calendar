@@ -11,7 +11,7 @@
             color:#FFF;
         }
         aside{
-            background-color:;
+            background-color:#2F303A;
             height:200px;
             width:230px;
             float:left;
@@ -54,6 +54,12 @@
         label{
             color:#000;
         }
+        a{
+            text-decoration: none;
+            display: flex;
+            color:#000;
+            background-color:#3F414D;
+        }
         .week{
             height:15px;
         }
@@ -70,12 +76,7 @@
             wight: 300px;
             margin-top:-10px;
         }
-        .dis{
-            font-size: 15px;
-            border-left:1px solid red;
-            padding-left:5px;
-            margin-top:0px;
-        }
+
         .del{
             display: none;
             top: 60px;
@@ -101,7 +102,7 @@
           background-color:#3A3A3F;
           border: 1px solid black;
         }
-        /* 2 штучки, чтобы при наведении появлялось описание события */
+        /* 3 штучки, чтобы при наведении появлялось описание события */
         .event{
             color:#D8C26E;
             height:20px;
@@ -110,7 +111,13 @@
             text-align:left;
             overflow:hidden;
         }
-        .event:hover::after {
+        .dis{
+            border-left:1px solid red;
+            padding-left:5px;
+            margin-top:0px;
+            font-size: 16px;
+        }
+        .dis:hover::after {
             content: attr(data-title); /* Выводим текст */
             margin-top:20px; margin-left: -20px;
             width: 180px; height: 200px;
@@ -136,6 +143,11 @@
             color:#000;
             width: 170px; height:80px;
             margin-left:-60px;
+        }
+        .ved{
+            border-left:2px solid blue;
+            margin-left:4px;
+            margin-top:4px;
         }
 
     </style>
@@ -175,8 +187,8 @@
     <button class="button" onclick="togglePopup()">Уведомления</button>
     <div class="popup" id="popup">
             {% for not in notification %}
-                <div class="not">
-                    {{ not.text }} {{ not.created_at }}
+                <div class="ved">
+                    {{ not.text }} <br>{{ not.created_at }}
                 </div>
             {% endfor %}
     </div></div>
@@ -344,9 +356,9 @@
                     {{ day.day }}
                         {% for event in events %}
                         {% if day.date == event.date_start %}
-                            <div class="event" data-title="{{ event.description }}">
-                                <div class="dis">
-                                    <a href="{% url 'edit_event' event.id %}" style="color:#FF69B4;">{{ event.name }}</a>
+                            <div class="event" >
+                                <div class="dis" data-title="{{ event.description }}">
+                                    <a href="{% url 'edit_event' event.id %}">{{ event.name }}</a>
                                 </div>
                             </div>
                         {% endif %}
