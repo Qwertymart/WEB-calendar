@@ -344,8 +344,10 @@
                     {{ day.day }}
                         {% for event in events %}
                         {% if day.date == event.date_start %}
-                            <div class="event" data-title="{{ event.description }}"><!--добавление события в ячейку-->
-                                <div class="dis">{{ event.name }}</div>
+                            <div class="event" data-title="{{ event.description }}">
+                                <div class="dis">
+                                    <a href="{% url 'edit_event' event.id %}" style="color:#FF69B4;">{{ event.name }}</a>
+                                </div>
                             </div>
                         {% endif %}
                         {% endfor %}

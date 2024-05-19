@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from home.views import home
 from events.views import events, week, day, week_view
+from event_editor.views import edit_event
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,6 +35,7 @@ urlpatterns = [
     # path('events/', events, name='month_calendar'),
     # path('events/week/', events, {'view_type': 'week'}, name='week_calendar'),
     path('events/week/<int:selected_year>/<int:selected_month>/<int:select_week>/', week, name='week_calendar_selected_week'),
+    path('event/<int:event_id>/edit/', edit_event, name='edit_event'),
 
     #path('events/week/', week, name='week'),
     #path('events/day/', day, name='day'),

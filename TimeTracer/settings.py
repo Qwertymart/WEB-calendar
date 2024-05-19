@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'events',
     'users',
     'home',
+    'event_editor',
 ]
 
 
