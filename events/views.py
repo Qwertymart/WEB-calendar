@@ -50,7 +50,7 @@ def week_view(request, select_week, selected_month, selected_year):
             week_of_month.append(None)
         days_of_month.append(week_of_month)
 
-    current_week = days_of_month[selected_week - 1]
+    current_week = days_of_month[get_week_number_in_month(timezone.now()) - 2]
     week_counter = len(days_of_month)
     options = []
     for number in range(week_counter):
@@ -78,6 +78,12 @@ def week_view(request, select_week, selected_month, selected_year):
     print('week_view done')
     return context
 
+
+def get_week_number_in_month(date):
+    first_day_of_month = date.replace(day=1)
+    day_of_month = date.day
+    week_number = (day_of_month + first_day_of_month.weekday()) // 7 + 1
+    return week_number
 
 def events(request, view_type='month'):
     def select_view():
@@ -225,7 +231,7 @@ def events(request, view_type='month'):
 
 
 def week(
-        request, select_week='1',
+        request, select_week=timezone.now().isocalendar()[1],
         selected_month=timezone.now().month,
         selected_year=timezone.now().year
 ):
