@@ -53,6 +53,11 @@
         label{
             color:#000;
         }
+        a{
+            text-decoration: none;
+            display: flex;
+            color:#000;
+        }
         .week{
             height:15px;
         }
@@ -74,7 +79,9 @@
             border-left:1px solid red;
             padding-left:5px;
             margin-top:0px;
+            background-color:#3F414D;
         }
+        /* для удаления*/
         .del{
             display: none;
             top: 60px;
@@ -93,8 +100,10 @@
           width: 200px;
           height:50px;
           margin-top:50px;
+          position:sticky;
         }
         .form-popup {
+
           display: none;
           top: 60px;
           background-color:#3A3A3F;
@@ -121,10 +130,10 @@
             border: 1px solid #FFF; /* Параметры рамки */
             color:#FFF;
         }
-        <!--3 штучки для уведомлений-->
+        /*2 штучки для уведомлений*/
         .button {
             width: 100px;
-            height: 50px;
+            height: 30px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -137,6 +146,7 @@
             width: 170px; height:80px;
             margin-left:-60px;
         }
+
     </style>
 </head>
 <body>
@@ -304,8 +314,10 @@
                     {% if current_day == event.date_start.day and month == event.date_start.month %}
                     {% if current_year == event.date_start.year and hour.time == event.time_start %}
                     <div class="event" data-title="{{ event.description }}">
-                        <div class="dis">{{ event.name }}</div>
+                        <a href="https://www.youtube.com" style="display: block">
+                            <div class="dis" onclick="openSettings('set{{ event.id }}')">{{ event.name }}</div></a>
                     </div>
+
                     {% endif %}
                     {% endif %}
                     {% endfor %}
@@ -314,6 +326,13 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <script>
+    function changeColor(elementId, color) {
+        document.getElementById(elementId).style.backgroundColor = color;
+    }
+
+    </script>
 </main>
 </body>
 </html>
