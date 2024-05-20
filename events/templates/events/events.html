@@ -57,8 +57,9 @@
         a{
             text-decoration: none;
             display: flex;
-            color:#000;
-            background-color:#3F414D;
+
+            border-radius:10px;
+
         }
         .week{
             height:15px;
@@ -85,6 +86,10 @@
         }
         .show {
             display: block;
+        }
+        .col{
+            background-color:#0068FF;
+            color:#FFF;
         }
         /* 2 штучки дял открытия формы добавления события*/
         .open-button {
@@ -128,10 +133,10 @@
             border: 1px solid #FFF; /* Параметры рамки */
             color:#FFF;
         }
-        <!--3 штучки для уведомлений-->
+        /*3 штучки для уведомлений*/
         .button {
             width: 100px;
-            height: 50px;
+            height: 30px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -283,6 +288,7 @@
                 <button onclick="closedis()">Без описания</button>
             </div>
             <br>
+
             <button type="submit" name="save_button">Добавить</button>
             <button type="button" onclick="closeFor()">Закрыть</button>
         </form>
@@ -358,7 +364,9 @@
                         {% if day.date == event.date_start %}
                             <div class="event" >
                                 <div class="dis" data-title="{{ event.description }}">
-                                    <a href="{% url 'edit_event' event.id %}">{{ event.name }}</a>
+                                    <a href="{% url 'edit_event' event.id %}" id="col{{ event.id }}" style="background-color: {{ event.color }};">
+                                        {{ event.name }}
+                                    </a>
                                 </div>
                             </div>
                         {% endif %}
