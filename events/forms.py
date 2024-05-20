@@ -6,12 +6,13 @@ from .models import Event
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['name', 'date_start', 'time_start', 'date_finish', 'time_finish', 'description']
+        fields = ['name', 'date_start', 'time_start', 'date_finish', 'time_finish', 'description', 'color']
         widgets = {
             'date_start': forms.DateInput(attrs={'class': 'datepicker'}),
             'time_start': forms.TimeInput(attrs={'class': 'timepicker'}),
             'date_finish': forms.DateInput(attrs={'class': 'datepicker'}),
             'time_finish': forms.TimeInput(attrs={'class': 'timepicker'}),
+            'color': forms.TextInput(attrs={'type': 'color'}),
         }
 
 
