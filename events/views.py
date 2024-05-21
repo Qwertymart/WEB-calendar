@@ -54,8 +54,8 @@ def week_view(request, select_week, selected_month, selected_year):
             week_of_month.append(None)
         days_of_month.append(week_of_month)
 
-    # Корректное получение текущей недели
-    current_week = days_of_month[int(selected_week) - 1] if 1 <= int(selected_week) <= len(days_of_month) else days_of_month[0]
+    current_week = days_of_month[int(selected_week) - 1] if 1 <= int(selected_week) <= len(days_of_month) else \
+    days_of_month[0]
     week_counter = len(days_of_month)
     options = [{'value': f'{number + 1}', 'label': f'{number + 1}'} for number in range(week_counter)]
 
@@ -85,13 +85,6 @@ def week_view(request, select_week, selected_month, selected_year):
 
     return context
 
-
-
-def get_week_number_in_month(date):
-    first_day_of_month = date.replace(day=1)
-    day_of_month = date.day
-    week_number = (day_of_month + first_day_of_month.weekday()) // 7 + 1
-    return week_number
 
 def events(request, view_type='month'):
     def select_view():
@@ -176,29 +169,6 @@ def events(request, view_type='month'):
             # я
         elif 'new_event' in request.GET:
             return redirect('/new_event')
-        else:
-            event_name = request.POST.get('name', None)
-            messages.append(HumanMessage(content=event_name))
-            res = chat(messages)
-            messages.append(res)
-            description_event = res.content
-            event_start_date = request.POST.get('date_start', None)
-            event_end_date = request.POST.get('date_finish', None)
-            event_time_start = request.POST.get('time_start', None)
-            event_time_end = request.POST.get('time_finish', None)
-            if 'description' in request.POST:
-                return render(request, 'events/events.html', {'name': event_name,
-                                                              'description': description_event,
-                                                              'date_start': event_start_date, 'date_finish': event_end_date,
-                                                              'time_start': event_time_start, 'time_finish': event_time_end})
-            form = EventForm(request.POST)
-            if form.is_valid():
-                event = form.save(commit=False)
-                event.user = request.user
-                event.description = description_event
-                event.save()
-                return redirect('/events')
-
 
     else:  # else для method GET
         view_type = request.GET.get('view type', view_type)
@@ -413,18 +383,75 @@ def day(
 
 def new_event(request):
     if request.method == "POST":
-        event_name = request.POST.get('name', None)
-        messages.append(HumanMessage(content=event_name))
-        res = chat(messages)
-        messages.append(res)
-        description_event = res.content
-        form = EventForm(request.POST)
-        if form.is_valid():
-            event = form.save(commit=False)
-            event.user = request.user
-            event.description = description_event
-            event.save()
+        print('зашли в пост')
+        if 'save_button' in request.POST:
+            print('зашли в сейв')
+            form = EventForm(request.POST)
+            if form.is_valid():
+                print('прошли валидность')
+                event = form.save(commit=False)
+                event.user = request.user
+                periodicity = form.cleaned_data['periodicity']
+                end_date = form.cleaned_data.get('end_date')
+                date_start = form.cleaned_data['date_start']
+                time_start = form.cleaned_data['time_start']
+                date_finish = form.cleaned_data['date_finish']
+                time_finish = form.cleaned_data['time_finish']
+
+                event.save()
+
+                if periodicity != 'no repeat' and end_date:
+                    current_date = date_start
+
+                    while True:
+                        if periodicity == 'daily':
+                            current_date += timedelta(days=1)
+                        elif periodicity == 'weekly':
+                            current_date += timedelta(weeks=1)
+                        elif periodicity == 'monthly':
+                            current_date = (current_date.replace(day=1) + timedelta(days=32)).replace(
+                                day=date_start.day)
+                        elif periodicity == 'yearly':
+                            current_date = current_date.replace(year=current_date.year + 1)
+
+                        if current_date > end_date:
+                            break
+
+                        new_event = Event(
+                            name=event.name,
+                            date_start=current_date,
+                            time_start=time_start,
+                            date_finish=current_date,
+                            time_finish=time_finish,
+                            description=event.description,
+                            color=event.color,
+                            user=request.user  # Установите текущего пользователя
+                        )
+                        new_event.save()
             return redirect('/events')
+
+        # if 'description' in request.POST:
+        #     print('пришли не туда')
+        #     event_name = request.POST.get('name', None)
+        #     messages.append(HumanMessage(content=event_name))
+        #     res = chat(messages)
+        #     messages.append(res)
+        #     description_event = res.content
+        #     form = EventForm(request.POST)
+        #     if form.is_valid():
+        #         event = form.save(commit=False)
+        #         event.user = request.user
+        #         event.description = description_event
+        #         event.save()
+        #         return redirect('/events')
+
     else:
         form = EventForm()
     return render(request, 'events/new_event.html', {'form': form})
+
+
+def get_week_number_in_month(date):
+    first_day_of_month = date.replace(day=1)
+    day_of_month = date.day
+    week_number = (day_of_month + first_day_of_month.weekday()) // 7 + 1
+    return week_number

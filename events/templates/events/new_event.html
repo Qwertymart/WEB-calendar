@@ -26,6 +26,10 @@
         <br>
         <label for="id_description">Description:</label>
         <button onclick="opendis()" name="description"> Добавить описание</button>
+        <br>
+        <label for="id_color">Finish time:</label>
+        <input type="color" id="id_color" name="color">
+
         <div class="form-popup" id="dis">
             <h4>Напиши своё описание</h4>
             {{ form.description }}
@@ -34,6 +38,12 @@
             <br>
             <button onclick="closedis()">Без описания</button>
         </div>
+        <br>
+        <label for="id_periodicity">Периодичность:</label>
+        {{ form.periodicity }}
+        <br>
+        <label for="id_end_date">Конечная дата:</label>
+        <input type="date" id="id_end_date" name="end_date">
         <br>
         <button type="submit" name="save_button">Добавить</button>
         <button type="button" onclick="closeFor()">Закрыть</button>
