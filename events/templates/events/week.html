@@ -53,12 +53,6 @@
         label{
             color:#000;
         }
-        a{
-            text-decoration: none;
-            display: flex;
-            border-radius:10px;
-            color:#FFF;
-        }
         .week{
             height:15px;
         }
@@ -75,7 +69,12 @@
             wight: 300px;
             margin-top:-7px;
         }
-
+        .dis{
+            font-size: 15px;
+            border-left:1px solid red;
+            padding-left:5px;
+            margin-top:3px;
+        }
         /* для удаления*/
         .del{
             display: none;
@@ -102,35 +101,30 @@
           background-color:#3A3A3F;
           border: 1px solid black;
         }
-        /* 3 штучки, чтобы при наведении появлялось описание события */
+        /* 2 штучки, чтобы при наведении появлялось описание события */
         .event{
             color:#D8C26E;
+            height:20px;
             width:100px;
             font-size: 20px;
             text-align:left;
             overflow:hidden;
         }
-        .dis{
-            font-size: 17px;
-            border-left:1px solid red;
-            padding-left:5px;
-            margin-top:3px;
-        }
-        .dis:hover::after {
+        .event:hover::after {
             content: attr(data-title); /* Выводим текст */
-            margin-top:0px; margin-left: -20px;
-            width: 180px; height: 200px;
+            margin-top:20px; margin-left: -20px;
+            width: 155px; height: 100px;
             position: absolute;/* Положение подсказки */
             z-index: 1; /* Отображаем подсказку поверх других элементов */
             background-color:#2F3030; /* Полупрозрачный цвет фона */
-            font-size: 17px; /* Размер текста подсказки */
+            font-size: 20px; /* Размер текста подсказки */
             border: 1px solid #FFF; /* Параметры рамки */
             color:#FFF;
         }
-        /*3 штучки для уведомлений*/
+        <!--3 штучки для уведомлений-->
         .button {
             width: 100px;
-            height: 30px;
+            height: 50px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -142,18 +136,6 @@
             color:#000;
             width: 170px; height:80px;
             margin-left:-60px;
-        }
-        .ved{
-            border-left:2px solid blue;
-            margin-left:4px;
-            margin-top:4px;
-        }
-        .exit{
-            border-radius:15px;
-            margin-right:0px;
-            border:none;
-            width:50px;
-            height:25px;
         }
     </style>
 </head>
@@ -192,8 +174,8 @@
     <button class="button" onclick="togglePopup()">Уведомления</button>
     <div class="popup" id="popup">
             {% for not in notification %}
-                <div class="ved">
-                    {{ not.text }}<br> {{ not.created_at }}
+                <div class="not">
+                    {{ not.text }} {{ not.created_at }}
                 </div>
             {% endfor %}
     </div></div>
@@ -211,7 +193,7 @@
     <div class="shapka">
         <form method="GET">
             {% csrf_token %}
-            <button class="exit" type = "submit" value = "Exit" name="exit">Выйти</button>
+            <button type = "submit" value = "Exit" name="exit">exit</button>
         </form>
     </div>
 </header>
@@ -269,45 +251,10 @@
     </form>
 
     <!-- вот реализация добавления события-->
-    <button class="open-button" onclick="openFor()">Добавить событие</button>
-    <div class="form-popup" id="myForm">
-        <form method="POST">
+    <form method="GET">
             {% csrf_token %}
-            <label for="id_name">Name:</label>
-            {{ form.name }}
-            <br>
-            <label for="id_date_start">Start Date:</label>
-            <input type="date" id="id_date_start" name="date_start">
-            <br>
-            <br>
-            <label for="id_time_start">Start time:</label>
-            <input type="time" id="id_time_start" name="time_start">
-            <br>
-            <label for="id_date_finish">Finish Date:</label>
-            <input type="date" id="id_date_finish" name="date_finish">
-            <br>
-            <br>
-            <label for="id_time_finish">Finish time:</label>
-            <input type="time" id="id_time_finish" name="time_finish">
-            <br>
-            <label for="id_color">Color:</label>
-            <input type="color" id="id_color" name="color">
-            <br>
-            <label for="id_description">Description:</label>
-            <button onclick="opendis()"> Добавить описание</button>
-            <div class="form-popup" id="dis">
-                <h4>Напиши своё описание</h4>
-                {{ form.description }}
-                <br>
-                <h4>вариант:</h4> вариант гпт
-                <br>
-                <button onclick="closedis()">Без описания</button>
-            </div>
-            <br>
-            <button type="submit">Добавить</button>
-            <button type="button" onclick="closeFor()">Закрыть</button>
-        </form>
-    </div>
+            <button class="open-button" name="new_event" onclick="openFor()">Добавить событие</button>
+    </form>
     <script>
     function opendis() {
       document.getElementById("dis").style.display = "block";
@@ -388,12 +335,8 @@
                 <td><!--Добавление события в ячейку-->
                     {% for event in events %}
                         {% if day.date == event.date_start and hour.time == event.time_start %}
-                            <div class="event">
-                                <div class="dis" data-title="{{ event.description }}">
-                                    <a href="{% url 'edit_event' event.id %}" id="col{{ event.id }}" style="background-color: {{ event.color }};">
-                                        {{ event.name }}
-                                    </a>
-                                </div>
+                            <div class="event" data-title="{{ event.description }}">
+                                <div class="dis">{{ event.name }}</div>
                             </div>
                         {% endif %}
                     {% endfor %}

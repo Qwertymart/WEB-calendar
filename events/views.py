@@ -5,8 +5,9 @@ from .models import Event as Event
 from .models import Notification
 from django.utils import timezone
 from datetime import datetime, timedelta
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from calendar import monthrange
+from django.views.decorators.csrf import csrf_exempt
 
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.chat_models.gigachat import GigaChat
@@ -159,6 +160,11 @@ def events(request, view_type='month'):
         return context
 
     description_event = ''
+    if 'exit' in request.GET:
+        return redirect('users:logout')
+
+    elif 'new_event' in request.GET:
+        return redirect('/events/new_event')
 
     if request.method == 'POST':
         if 'my_button' in request.POST:
@@ -169,25 +175,8 @@ def events(request, view_type='month'):
             event.delete()  # Удаляем событие
             return redirect('/events')  # Перенаправляем обратно на страницу событий после удалени
             # я
-        description_event = None  # По умолчанию значение None
-
-        if 'description' in request.POST:
-            event_name = request.POST.get('name', None)
-            messages.append(HumanMessage(content=event_name))
-            res = chat(messages)
-            messages.append(res)
-            description_event = res.content
-            return JsonResponse({'event_name': event_name, 'description_event': description_event})
-
-        elif 'save_button' in request.POST:
-            form = EventForm(request.POST)
-            if form.is_valid():
-                event = form.save(commit=False)
-                event.user = request.user
-                event.description = description_event  # Используем переменную description_event
-                event.save()
-                return redirect('/events')
-
+        elif 'new_event' in request.GET:
+            return redirect('/new_event')
 
     else:  # else для method GET
         view_type = request.GET.get('view type', view_type)
@@ -239,6 +228,12 @@ def events(request, view_type='month'):
 
 
 def week(request, select_week=None, selected_month=None, selected_year=None):
+    if 'exit' in request.GET:
+        return redirect('users:logout')
+
+    elif 'new_event' in request.GET:
+        return redirect('/events/new_event')
+
     if request.method == 'POST':
         if 'my_button' in request.POST:
             return redirect('home')
@@ -247,20 +242,6 @@ def week(request, select_week=None, selected_month=None, selected_year=None):
             event = Event.objects.get(id=event_id)
             event.delete()
             return redirect('week')
-        else:
-            event_name = request.POST.get('name', None)
-            messages.append(HumanMessage(content=event_name))
-            res = chat(messages)
-            messages.append(res)
-            description_event = res.content
-
-            form = EventForm(request.POST)
-            if form.is_valid():
-                event = form.save(commit=False)
-                event.user = request.user
-                event.description = description_event
-                event.save()
-                return redirect('week')
     else:
         if 'view_button' in request.GET:
             form = ViewTypeForm()
@@ -298,6 +279,12 @@ def day(
         selected_year=timezone.now().year,
         selected_day=timezone.now().day
 ):
+    if 'exit' in request.GET:
+        return redirect('users:logout')
+
+    elif 'new_event' in request.GET:
+        return redirect('/events/new_event')
+
     if request.method == 'POST':
         form_day = DateSelectionForm(request.POST)
         if form_day.is_valid():
@@ -316,21 +303,6 @@ def day(
             return redirect('day')  # Перенаправляем обратно на страницу событий после удаления
         elif 'day_select' in request.POST:
             return redirect('day_selected_day', selected_year, selected_month, selected_day)
-        else:
-            event_name = request.POST.get('name', None)
-            messages.append(HumanMessage(content=event_name))
-            res = chat(messages)
-            messages.append(res)
-            description_event = res.content
-
-            form = EventForm(request.POST)
-
-            if form.is_valid():
-                event = form.save(commit=False)
-                event.user = request.user
-                event.description = description_event
-                event.save()
-                return redirect('day')
     else:
         form_day = DateSelectionForm()
         if 'view_button' in request.GET:  # Если нажата кнопка submit при выборе отображения
@@ -386,3 +358,28 @@ def day(
         'hours': hours, 'notification': notification}
 
     return render(request, 'events/day.html', calendar_data)
+
+@csrf_exempt
+def generate_description(request):
+    if request.method == "POST":
+        event_name = request.POST.get('name', None)
+        messages.append(HumanMessage(content=event_name))
+        res = chat(messages)
+        messages.append(res)
+        description_event = res.content
+        return JsonResponse({'description': description_event})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def new_event(request):
+    if request.method == "POST":
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.user = request.user
+            event.description = request.POST.get('description', '')
+            event.save()
+            return redirect('/events')
+    else:
+        form = EventForm()
+    return render(request, 'events/new_event.html', {'form': form})

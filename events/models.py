@@ -10,8 +10,7 @@ class Event(models.Model):
     time_start = models.TimeField(verbose_name='Время начала события')
     date_finish = models.DateField(verbose_name='Дата окончания события', blank=True, null=True)
     time_finish = models.TimeField(verbose_name='Время окончания события')
-    description = models.CharField(max_length=200, verbose_name='Описание', blank=True)
-    color = models.CharField(max_length=10, verbose_name='Цвет')
+    description = models.TextField(max_length=200, verbose_name='Описание', blank=True)
 
     class Meta:
         verbose_name = "Event"
