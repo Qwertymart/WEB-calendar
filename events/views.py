@@ -79,10 +79,10 @@ def week_view(request, select_week, selected_month, selected_year):
 
     context = {
         'selected_month': month[selected_month - 1], 'form': form, 'events': events,
-        'selected_year': YEARS[YEARS.index(name)][1], 'hours': hours,
+        'selected_year': selected_year, 'hours': hours,
         'days_of_month': days_of_month, 'current_week': current_week,
         'options': options, 'select_week': selected_week, 'current_month': month[current_month - 1],
-        'notification': notification, 'current_year': current_year
+        'notification': notification, 'current_year': current_year, 'month': selected_month
     }
 
     return context

@@ -36,11 +36,17 @@
             float:left;
             margin-right:5px;
             height:30px;
+
+        }
+        select{
+            margin-bottom:10px;
+            border-radius:10px;
+            width:120px;
         }
         input{
             border-radius:10px;
             height:20px;
-            margin-bottom:10px;
+            margin-bottom:12px;
             padding-left:5px;
             border:none;
         }
@@ -57,6 +63,9 @@
             width:350px;
             border-radius:20px;
             padding:10px;
+        }
+        .lab{
+            margin-left:-90px;
         }
     </style>
 </head>
@@ -88,14 +97,13 @@
         <label for="id_periodicity">Повторения:</label>
         {{ form.periodicity }}
         <br>
-        <label for="id_end_date">Окончание повторений:</label>
+        <label class="lab" for="id_end_date">Окончание повторений:</label>
         <input type="date" id="id_end_date" name="end_date">
         <br>
         <label for="id_description">Описание:</label>
         {{ form.description }}
         <br>
         <button type="button" id="generate-description-button" name="description">Добавить описание ИИ</button>
-
         <div id="description_suggestion" class="dis">
             <h4>Предложенное описание:</h4>
             <p id="generated-description"></p>
@@ -103,8 +111,8 @@
         </div>
         <br>
         <button type="submit" name="save_button">Добавить событие</button>
-
     </form>
+    <!--Реализация получения ответа гигачата-->
     <script>
         $(document).ready(function() {
             $('#generate-description-button').click(function() {
