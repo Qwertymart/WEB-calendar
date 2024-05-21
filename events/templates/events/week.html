@@ -56,8 +56,8 @@
         a{
             text-decoration: none;
             display: flex;
-            color:#000;
-            background-color:#3F414D;
+            border-radius:10px;
+            color:#FFF;
         }
         .week{
             height:15px;
@@ -148,6 +148,13 @@
             margin-left:4px;
             margin-top:4px;
         }
+        .exit{
+            border-radius:15px;
+            margin-right:0px;
+            border:none;
+            width:50px;
+            height:25px;
+        }
     </style>
 </head>
 <body>
@@ -204,7 +211,7 @@
     <div class="shapka">
         <form method="GET">
             {% csrf_token %}
-            <button type = "submit" value = "Exit" name="exit">exit</button>
+            <button class="exit" type = "submit" value = "Exit" name="exit">Выйти</button>
         </form>
     </div>
 </header>
@@ -282,6 +289,9 @@
             <br>
             <label for="id_time_finish">Finish time:</label>
             <input type="time" id="id_time_finish" name="time_finish">
+            <br>
+            <label for="id_color">Color:</label>
+            <input type="color" id="id_color" name="color">
             <br>
             <label for="id_description">Description:</label>
             <button onclick="opendis()"> Добавить описание</button>
@@ -380,7 +390,9 @@
                         {% if day.date == event.date_start and hour.time == event.time_start %}
                             <div class="event">
                                 <div class="dis" data-title="{{ event.description }}">
-                                    <a href="{% url 'edit_event' event.id %}">{{ event.name }}</a>
+                                    <a href="{% url 'edit_event' event.id %}" id="col{{ event.id }}" style="background-color: {{ event.color }};">
+                                        {{ event.name }}
+                                    </a>
                                 </div>
                             </div>
                         {% endif %}

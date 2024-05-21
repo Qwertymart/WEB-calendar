@@ -57,9 +57,8 @@
         a{
             text-decoration: none;
             display: flex;
-
             border-radius:10px;
-
+            color:#FFF;
         }
         .week{
             height:15px;
@@ -77,7 +76,7 @@
             wight: 300px;
             margin-top:-10px;
         }
-
+        /*Для удаления*/
         .del{
             display: none;
             top: 60px;
@@ -87,10 +86,7 @@
         .show {
             display: block;
         }
-        .col{
-            background-color:#0068FF;
-            color:#FFF;
-        }
+
         /* 2 штучки дял открытия формы добавления события*/
         .open-button {
           background-color: #555;
@@ -154,7 +150,13 @@
             margin-left:4px;
             margin-top:4px;
         }
-
+        .exit{
+            border-radius:15px;
+            margin-right:0px;
+            border:none;
+            width:50px;
+            height:25px;
+        }
     </style>
 </head>
 <body>
@@ -212,7 +214,7 @@
     <div class="shapka">
         <form method="GET">
             {% csrf_token %}
-            <button type = "submit" value = "Exit" name="exit">exit</button>
+            <button class="exit" type = "submit" value = "Exit" name="exit">Выйти</button>
         </form>
     </div>
 </header>
