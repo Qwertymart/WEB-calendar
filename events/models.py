@@ -8,9 +8,9 @@ class Event(models.Model):
     name = models.CharField(max_length=50, verbose_name='Имя')
     date_start = models.DateField(verbose_name='Дата начала события')
     time_start = models.TimeField(verbose_name='Время начала события', blank=True)
-    date_finish = models.DateField(verbose_name='Дата окончания события', blank=True)
+    date_finish = models.DateField(verbose_name='Дата окончания события', blank=True, null=True)
     time_finish = models.TimeField(verbose_name='Время окончания события', blank=True)
-    description = models.CharField(max_length=200, verbose_name='Описание', blank=True)
+    description = models.TextField(max_length=200, verbose_name='Описание', blank=True)
     color = models.CharField(max_length=10, verbose_name='Цвет')
 
     class Meta:

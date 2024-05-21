@@ -7,6 +7,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from django.http import JsonResponse, HttpResponse
 from calendar import monthrange
+from django.views.decorators.csrf import csrf_exempt
 
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.chat_models.gigachat import GigaChat
@@ -369,7 +370,6 @@ def day(
         hours.append(datetime.strptime(i, '%H:%M'))
 
     notification = Notification.objects.filter(user=request.user)
-    # YEARS[YEARS.index(name)][1]
     calendar_data = {
         'form': form, 'form_day': form_day, 'events': events,
         'current_month': month[selected_month - 1],
@@ -380,70 +380,61 @@ def day(
 
     return render(request, 'events/day.html', calendar_data)
 
+@csrf_exempt
+def generate_description(request):
+    if request.method == "POST":
+        event_name = request.POST.get('name', None)
+        messages.append(HumanMessage(content=event_name))
+        res = chat(messages)
+        messages.append(res)
+        description_event = res.content
+        return JsonResponse({'description': description_event})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def new_event(request):
     if request.method == "POST":
-        print('зашли в пост')
-        if 'save_button' in request.POST:
-            print('зашли в сейв')
-            form = EventForm(request.POST)
-            if form.is_valid():
-                print('прошли валидность')
-                event = form.save(commit=False)
-                event.user = request.user
-                periodicity = form.cleaned_data['periodicity']
-                end_date = form.cleaned_data.get('end_date')
-                date_start = form.cleaned_data['date_start']
-                time_start = form.cleaned_data['time_start']
-                date_finish = form.cleaned_data['date_finish']
-                time_finish = form.cleaned_data['time_finish']
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.user = request.user
+            periodicity = form.cleaned_data['periodicity']
+            end_date = form.cleaned_data.get('end_date')
+            date_start = form.cleaned_data['date_start']
+            time_start = form.cleaned_data['time_start']
+            date_finish = form.cleaned_data['date_finish']
+            time_finish = form.cleaned_data['time_finish']
 
-                event.save()
+            event.save()
 
-                if periodicity != 'no repeat' and end_date:
-                    current_date = date_start
+            if periodicity != 'no repeat' and end_date:
+                current_date = date_start
 
-                    while True:
-                        if periodicity == 'daily':
-                            current_date += timedelta(days=1)
-                        elif periodicity == 'weekly':
-                            current_date += timedelta(weeks=1)
-                        elif periodicity == 'monthly':
-                            current_date = (current_date.replace(day=1) + timedelta(days=32)).replace(
-                                day=date_start.day)
-                        elif periodicity == 'yearly':
-                            current_date = current_date.replace(year=current_date.year + 1)
+                while True:
+                    if periodicity == 'daily':
+                        current_date += timedelta(days=1)
+                    elif periodicity == 'weekly':
+                        current_date += timedelta(weeks=1)
+                    elif periodicity == 'monthly':
+                        current_date = (current_date.replace(day=1) + timedelta(days=32)).replace(
+                            day=date_start.day)
+                    elif periodicity == 'yearly':
+                        current_date = current_date.replace(year=current_date.year + 1)
 
-                        if current_date > end_date:
-                            break
+                    if current_date > end_date:
+                        break
 
-                        new_event = Event(
-                            name=event.name,
-                            date_start=current_date,
-                            time_start=time_start,
-                            date_finish=current_date,
-                            time_finish=time_finish,
-                            description=event.description,
-                            color=event.color,
-                            user=request.user  # Установите текущего пользователя
-                        )
-                        new_event.save()
+                    new_event = Event(
+                        name=event.name,
+                        date_start=current_date,
+                        time_start=time_start,
+                        date_finish=current_date,
+                        time_finish=time_finish,
+                        description=event.description,
+                        color=event.color,
+                        user=request.user
+                    )
+                    new_event.save()
             return redirect('/events')
-
-        # if 'description' in request.POST:
-        #     print('пришли не туда')
-        #     event_name = request.POST.get('name', None)
-        #     messages.append(HumanMessage(content=event_name))
-        #     res = chat(messages)
-        #     messages.append(res)
-        #     description_event = res.content
-        #     form = EventForm(request.POST)
-        #     if form.is_valid():
-        #         event = form.save(commit=False)
-        #         event.user = request.user
-        #         event.description = description_event
-        #         event.save()
-        #         return redirect('/events')
 
     else:
         form = EventForm()
