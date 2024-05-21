@@ -5,7 +5,7 @@ from .models import Event as Event
 from .models import Notification
 from django.utils import timezone
 from datetime import datetime, timedelta
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from calendar import monthrange
 
 from langchain.schema import HumanMessage, SystemMessage
@@ -159,6 +159,11 @@ def events(request, view_type='month'):
         return context
 
     description_event = ''
+    if 'exit' in request.GET:
+        return redirect('users:logout')
+
+    elif 'new_event' in request.GET:
+        return redirect('/events/new_event')
 
     if request.method == 'POST':
         if 'my_button' in request.POST:
@@ -169,22 +174,28 @@ def events(request, view_type='month'):
             event.delete()  # Удаляем событие
             return redirect('/events')  # Перенаправляем обратно на страницу событий после удалени
             # я
-        description_event = None  # По умолчанию значение None
-
-        if 'description' in request.POST:
+        elif 'new_event' in request.GET:
+            return redirect('/new_event')
+        else:
             event_name = request.POST.get('name', None)
             messages.append(HumanMessage(content=event_name))
             res = chat(messages)
             messages.append(res)
             description_event = res.content
-            return JsonResponse({'event_name': event_name, 'description_event': description_event})
-
-        elif 'save_button' in request.POST:
+            event_start_date = request.POST.get('date_start', None)
+            event_end_date = request.POST.get('date_finish', None)
+            event_time_start = request.POST.get('time_start', None)
+            event_time_end = request.POST.get('time_finish', None)
+            if 'description' in request.POST:
+                return render(request, 'events/events.html', {'name': event_name,
+                                                              'description': description_event,
+                                                              'date_start': event_start_date, 'date_finish': event_end_date,
+                                                              'time_start': event_time_start, 'time_finish': event_time_end})
             form = EventForm(request.POST)
             if form.is_valid():
                 event = form.save(commit=False)
                 event.user = request.user
-                event.description = description_event  # Используем переменную description_event
+                event.description = description_event
                 event.save()
                 return redirect('/events')
 
@@ -239,6 +250,12 @@ def events(request, view_type='month'):
 
 
 def week(request, select_week=None, selected_month=None, selected_year=None):
+    if 'exit' in request.GET:
+        return redirect('users:logout')
+
+    elif 'new_event' in request.GET:
+        return redirect('/events/new_event')
+
     if request.method == 'POST':
         if 'my_button' in request.POST:
             return redirect('home')
@@ -298,6 +315,12 @@ def day(
         selected_year=timezone.now().year,
         selected_day=timezone.now().day
 ):
+    if 'exit' in request.GET:
+        return redirect('users:logout')
+
+    elif 'new_event' in request.GET:
+        return redirect('/events/new_event')
+
     if request.method == 'POST':
         form_day = DateSelectionForm(request.POST)
         if form_day.is_valid():
@@ -386,3 +409,22 @@ def day(
         'hours': hours, 'notification': notification}
 
     return render(request, 'events/day.html', calendar_data)
+
+
+def new_event(request):
+    if request.method == "POST":
+        event_name = request.POST.get('name', None)
+        messages.append(HumanMessage(content=event_name))
+        res = chat(messages)
+        messages.append(res)
+        description_event = res.content
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.user = request.user
+            event.description = description_event
+            event.save()
+            return redirect('/events')
+    else:
+        form = EventForm()
+    return render(request, 'events/new_event.html', {'form': form})
