@@ -7,7 +7,8 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from django.http import JsonResponse, HttpResponse
 from calendar import monthrange
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.views.decorators.http import require_POST
 
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.chat_models.gigachat import GigaChat
@@ -265,7 +266,7 @@ def week(request, select_week=None, selected_month=None, selected_year=None):
     selected_year = request.GET.get('selected_year', selected_year)
 
     if select_week is None:
-        select_week = get_week_number_in_month(timezone.now()) - 1
+        select_week = get_week_number_in_month(timezone.now())
     if selected_month is None:
         selected_month = timezone.now().month
     if selected_year is None:
@@ -370,6 +371,7 @@ def day(
         hours.append(datetime.strptime(i, '%H:%M'))
 
     notification = Notification.objects.filter(user=request.user)
+    # YEARS[YEARS.index(name)][1]
     calendar_data = {
         'form': form, 'form_day': form_day, 'events': events,
         'current_month': month[selected_month - 1],
@@ -383,6 +385,7 @@ def day(
 @csrf_exempt
 def generate_description(request):
     if request.method == "POST":
+        print('зашли в генерейт')
         event_name = request.POST.get('name', None)
         messages.append(HumanMessage(content=event_name))
         res = chat(messages)
@@ -393,8 +396,10 @@ def generate_description(request):
 
 def new_event(request):
     if request.method == "POST":
+        print('зашел в основу')
         form = EventForm(request.POST)
         if form.is_valid():
+            print('прошел валидность')
             event = form.save(commit=False)
             event.user = request.user
             periodicity = form.cleaned_data['periodicity']
@@ -431,7 +436,7 @@ def new_event(request):
                         time_finish=time_finish,
                         description=event.description,
                         color=event.color,
-                        user=request.user
+                        user=request.user  # Установите текущего пользователя
                     )
                     new_event.save()
             return redirect('/events')
@@ -446,3 +451,27 @@ def get_week_number_in_month(date):
     day_of_month = date.day
     week_number = (day_of_month + first_day_of_month.weekday()) // 7 + 1
     return week_number
+
+@csrf_protect
+def move_event(request):
+    if request.method == "POST":
+        event_id = request.POST.get("event_id")
+        new_date = request.POST.get("new_date")
+
+        print("Event ID:", event_id)
+        print("New Date:", new_date)
+
+        try:
+            event = Event.objects.get(id=event_id)
+            event.date_start = datetime.strptime(new_date, "%Y-%m-%d").date()
+            event.date_finish = event.date_start  # если событие однодневное
+            event.save()
+            print("Event updated:", event)  # Добавлено для отладки
+            return JsonResponse({'status': 'success'})
+        except Event.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Событие не найдено'})
+        except Exception as e:
+            print("Error:", str(e))  # Добавлено для отладки
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
