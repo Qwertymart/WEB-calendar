@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <title>Events</title>
     <style>
         body{
@@ -305,29 +308,96 @@
             </tr>
             </thead>
             <tbody>
-            {% for week in days_of_month %}
-            <tr valign="top">
-                {% for day in week %}
-                <td>
-                    {% if day %}
-                    {{ day.day }}
-                        {% for event in events %}
-                        {% if day.date == event.date_start %}
-                            <div class="event" data-title="{{ event.description }}">
-                                <div class="dis">
-                                    <a href="{% url 'edit_event' event.id %}" style="color:#FF69B4;">{{ event.name }}</a>
+                {% for week in days_of_month %}
+                <tr valign="top">
+                    {% for day in week %}
+                    <td class="calendar-day" data-date="{{ day.date }}">
+                        {% if day %}
+                        {{ day.day }}
+                            {% for event in events %}
+                            {% if day.date == event.date_start %}
+                                <div class="event" data-id="{{ event.id }}" data-title="{{ event.description }}" draggable="true">
+                                    <div class="dis">
+                                        <a href="{% url 'edit_event' event.id %}" style="color:#FF69B4;">{{ event.name }}</a>
+                                    </div>
                                 </div>
-                            </div>
+                            {% endif %}
+                            {% endfor %}
                         {% endif %}
-                        {% endfor %}
-                    {% endif %}
-                </td>
+                    </td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-            {% endfor %}
             </tbody>
             </table>
         </div>
 </main>
+<script>
+$(document).ready(function() {
+    $(".event").draggable({
+        revert: "invalid",
+        helper: "clone"
+    });
+
+    $(".calendar-day").droppable({
+        accept: ".event",
+        drop: function(event, ui) {
+            var eventId = ui.helper.data("id");
+            var newDate = $(this).data("date");
+
+            // Конвертируем дату в нужный формат (гггг-мм-дд)
+            var dateParts = newDate.split(' ');
+            var months = {
+                'января': '01',
+                'февраля': '02',
+                'марта': '03',
+                'апреля': '04',
+                'мая': '05',
+                'июня': '06',
+                'июля': '07',
+                'августа': '08',
+                'сентября': '09',
+                'октября': '10',
+                'ноября': '11',
+                'декабря': '12'
+            };
+            var day = dateParts[0];
+            var month = months[dateParts[1]];
+            var year = dateParts[2].replace('г.', '');
+            var formattedDate = `${year}-${month}-${day}`;
+
+            console.log("Event ID:", eventId);  // Добавлено для отладки
+            console.log("Formatted Date:", formattedDate);  // Добавлено для отладки
+
+            // Перемещаем событие на новое место в DOM
+            ui.helper.appendTo($(this)).css({top: 0, left: 0});
+
+            // Отправляем запрос на сервер для обновления даты события
+            $.ajax({
+                type: "POST",
+                url: "{% url 'move_event' %}",
+                data: {
+                    'event_id': eventId,
+                    'new_date': formattedDate,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    console.log("Response:", response);  // Добавлено для отладки
+                    if(response.status === 'success') {
+                        alert("Событие успешно перемещено!");
+                        location.reload();  // Обновление страницы после перемещения события
+                    } else {
+                        alert("Произошла ошибка: " + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log("Error:", error);  // Добавлено для отладки
+                    alert("Произошла ошибка при перемещении события.");
+                }
+            });
+        }
+    });
+});
+</script>
 </body>
 </html>
