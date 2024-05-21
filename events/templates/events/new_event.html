@@ -33,6 +33,7 @@
         <div id="description_suggestion" style="display:none;">
             <h4>Предложенное описание:</h4>
             <p id="generated-description"></p>
+            <button type="button" id="accept-description-button">Согласиться</button>
         </div>
         <br>
         <button type="submit" name="save_button">Добавить</button>
@@ -52,7 +53,6 @@
                         success: function(response) {
                             $('#generated-description').text(response.description);
                             $('#description_suggestion').show();
-                            $('textarea[name="description"]').val(response.description); // Обновление текстового поля описания
                         },
                         error: function(xhr, status, error) {
                             alert('Ошибка при генерации описания');
@@ -61,6 +61,11 @@
                 } else {
                     alert('Пожалуйста, введите название события.');
                 }
+            });
+
+            $('#accept-description-button').click(function() {
+                const generatedDescription = $('#generated-description').text();
+                $('textarea[name="description"]').val(generatedDescription);
             });
         });
     </script>
