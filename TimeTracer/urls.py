@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from home.views import home
-from events.views import events, week, day, week_view, new_event
+from events.views import events, week, day, week_view, new_event, generate_description
 from event_editor.views import edit_event
 
 urlpatterns = [
@@ -31,6 +31,7 @@ urlpatterns = [
     path('events/week/', week, name='week'),
     path('events/day/', day, name='day'),
     path('events/new_event/', new_event, name='new_event'),
+    path('events/generate_description/', generate_description, name='generate_description'),
     path('events/day/<int:selected_year>/<int:selected_month>/<int:selected_day>/', day, name='day_selected_day'),
     # Дополнительные маршруты для обработки различных действий или типов отображения
     # path('events/', events, name='month_calendar'),

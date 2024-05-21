@@ -7,6 +7,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from django.http import JsonResponse, HttpResponse
 from calendar import monthrange
+from django.views.decorators.csrf import csrf_exempt
 
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.chat_models.gigachat import GigaChat
@@ -176,29 +177,6 @@ def events(request, view_type='month'):
             # я
         elif 'new_event' in request.GET:
             return redirect('/new_event')
-        else:
-            event_name = request.POST.get('name', None)
-            messages.append(HumanMessage(content=event_name))
-            res = chat(messages)
-            messages.append(res)
-            description_event = res.content
-            event_start_date = request.POST.get('date_start', None)
-            event_end_date = request.POST.get('date_finish', None)
-            event_time_start = request.POST.get('time_start', None)
-            event_time_end = request.POST.get('time_finish', None)
-            if 'description' in request.POST:
-                return render(request, 'events/events.html', {'name': event_name,
-                                                              'description': description_event,
-                                                              'date_start': event_start_date, 'date_finish': event_end_date,
-                                                              'time_start': event_time_start, 'time_finish': event_time_end})
-            form = EventForm(request.POST)
-            if form.is_valid():
-                event = form.save(commit=False)
-                event.user = request.user
-                event.description = description_event
-                event.save()
-                return redirect('/events')
-
 
     else:  # else для method GET
         view_type = request.GET.get('view type', view_type)
@@ -264,20 +242,6 @@ def week(request, select_week=None, selected_month=None, selected_year=None):
             event = Event.objects.get(id=event_id)
             event.delete()
             return redirect('week')
-        else:
-            event_name = request.POST.get('name', None)
-            messages.append(HumanMessage(content=event_name))
-            res = chat(messages)
-            messages.append(res)
-            description_event = res.content
-
-            form = EventForm(request.POST)
-            if form.is_valid():
-                event = form.save(commit=False)
-                event.user = request.user
-                event.description = description_event
-                event.save()
-                return redirect('week')
     else:
         if 'view_button' in request.GET:
             form = ViewTypeForm()
@@ -339,21 +303,6 @@ def day(
             return redirect('day')  # Перенаправляем обратно на страницу событий после удаления
         elif 'day_select' in request.POST:
             return redirect('day_selected_day', selected_year, selected_month, selected_day)
-        else:
-            event_name = request.POST.get('name', None)
-            messages.append(HumanMessage(content=event_name))
-            res = chat(messages)
-            messages.append(res)
-            description_event = res.content
-
-            form = EventForm(request.POST)
-
-            if form.is_valid():
-                event = form.save(commit=False)
-                event.user = request.user
-                event.description = description_event
-                event.save()
-                return redirect('day')
     else:
         form_day = DateSelectionForm()
         if 'view_button' in request.GET:  # Если нажата кнопка submit при выборе отображения
@@ -410,19 +359,25 @@ def day(
 
     return render(request, 'events/day.html', calendar_data)
 
-
-def new_event(request):
+@csrf_exempt
+def generate_description(request):
     if request.method == "POST":
         event_name = request.POST.get('name', None)
         messages.append(HumanMessage(content=event_name))
         res = chat(messages)
         messages.append(res)
         description_event = res.content
+        return JsonResponse({'description': description_event})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def new_event(request):
+    if request.method == "POST":
         form = EventForm(request.POST)
         if form.is_valid():
             event = form.save(commit=False)
             event.user = request.user
-            event.description = description_event
+            event.description = request.POST.get('description', '')
             event.save()
             return redirect('/events')
     else:
