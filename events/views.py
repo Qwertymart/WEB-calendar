@@ -55,8 +55,8 @@ def week_view(request, select_week, selected_month, selected_year):
             week_of_month.append(None)
         days_of_month.append(week_of_month)
 
-    # Корректное получение текущей недели
-    current_week = days_of_month[int(selected_week) - 1] if 1 <= int(selected_week) <= len(days_of_month) else days_of_month[0]
+    current_week = days_of_month[int(selected_week) - 1] if 1 <= int(selected_week) <= len(days_of_month) else \
+    days_of_month[0]
     week_counter = len(days_of_month)
     options = [{'value': f'{number + 1}', 'label': f'{number + 1}'} for number in range(week_counter)]
 
@@ -86,13 +86,6 @@ def week_view(request, select_week, selected_month, selected_year):
 
     return context
 
-
-
-def get_week_number_in_month(date):
-    first_day_of_month = date.replace(day=1)
-    day_of_month = date.day
-    week_number = (day_of_month + first_day_of_month.weekday()) // 7 + 1
-    return week_number
 
 def events(request, view_type='month'):
     def select_view():
@@ -242,6 +235,20 @@ def week(request, select_week=None, selected_month=None, selected_year=None):
             event = Event.objects.get(id=event_id)
             event.delete()
             return redirect('week')
+        else:
+            event_name = request.POST.get('name', None)
+            messages.append(HumanMessage(content=event_name))
+            res = chat(messages)
+            messages.append(res)
+            description_event = res.content
+
+            form = EventForm(request.POST)
+            if form.is_valid():
+                event = form.save(commit=False)
+                event.user = request.user
+                event.description = description_event
+                event.save()
+                return redirect('week')
     else:
         if 'view_button' in request.GET:
             form = ViewTypeForm()
@@ -303,6 +310,21 @@ def day(
             return redirect('day')  # Перенаправляем обратно на страницу событий после удаления
         elif 'day_select' in request.POST:
             return redirect('day_selected_day', selected_year, selected_month, selected_day)
+        else:
+            event_name = request.POST.get('name', None)
+            messages.append(HumanMessage(content=event_name))
+            res = chat(messages)
+            messages.append(res)
+            description_event = res.content
+
+            form = EventForm(request.POST)
+
+            if form.is_valid():
+                event = form.save(commit=False)
+                event.user = request.user
+                event.description = description_event
+                event.save()
+                return redirect('day')
     else:
         form_day = DateSelectionForm()
         if 'view_button' in request.GET:  # Если нажата кнопка submit при выборе отображения
@@ -348,7 +370,6 @@ def day(
         hours.append(datetime.strptime(i, '%H:%M'))
 
     notification = Notification.objects.filter(user=request.user)
-    # YEARS[YEARS.index(name)][1]
     calendar_data = {
         'form': form, 'form_day': form_day, 'events': events,
         'current_month': month[selected_month - 1],
@@ -370,16 +391,58 @@ def generate_description(request):
         return JsonResponse({'description': description_event})
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
-
 def new_event(request):
     if request.method == "POST":
         form = EventForm(request.POST)
         if form.is_valid():
             event = form.save(commit=False)
             event.user = request.user
-            event.description = request.POST.get('description', '')
+            periodicity = form.cleaned_data['periodicity']
+            end_date = form.cleaned_data.get('end_date')
+            date_start = form.cleaned_data['date_start']
+            time_start = form.cleaned_data['time_start']
+            date_finish = form.cleaned_data['date_finish']
+            time_finish = form.cleaned_data['time_finish']
+
             event.save()
+
+            if periodicity != 'no repeat' and end_date:
+                current_date = date_start
+
+                while True:
+                    if periodicity == 'daily':
+                        current_date += timedelta(days=1)
+                    elif periodicity == 'weekly':
+                        current_date += timedelta(weeks=1)
+                    elif periodicity == 'monthly':
+                        current_date = (current_date.replace(day=1) + timedelta(days=32)).replace(
+                            day=date_start.day)
+                    elif periodicity == 'yearly':
+                        current_date = current_date.replace(year=current_date.year + 1)
+
+                    if current_date > end_date:
+                        break
+
+                    new_event = Event(
+                        name=event.name,
+                        date_start=current_date,
+                        time_start=time_start,
+                        date_finish=current_date,
+                        time_finish=time_finish,
+                        description=event.description,
+                        color=event.color,
+                        user=request.user
+                    )
+                    new_event.save()
             return redirect('/events')
+
     else:
         form = EventForm()
     return render(request, 'events/new_event.html', {'form': form})
+
+
+def get_week_number_in_month(date):
+    first_day_of_month = date.replace(day=1)
+    day_of_month = date.day
+    week_number = (day_of_month + first_day_of_month.weekday()) // 7 + 1
+    return week_number

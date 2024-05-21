@@ -25,6 +25,15 @@
         <label for="id_time_finish">Время окончания:</label>
         <input type="time" id="id_time_finish" name="time_finish">
         <br>
+        <label for="id_color">Color:</label>
+        <input type="color" id="id_color" name="color">
+        <br>
+        <label for="id_periodicity">Периодичность:</label>
+        {{ form.periodicity }}
+        <br>
+        <label for="id_end_date">Конечная дата:</label>
+        <input type="date" id="id_end_date" name="end_date">
+        <br>
         <label for="id_description">Описание:</label>
         {{ form.description }}
         <br>
@@ -37,6 +46,7 @@
         </div>
         <br>
         <button type="submit" name="save_button">Добавить</button>
+
     </form>
     <script>
         $(document).ready(function() {
