@@ -162,6 +162,9 @@ def events(request, view_type='month'):
     if 'exit' in request.GET:
         return redirect('users:logout')
 
+    elif 'new_event' in request.GET:
+        return redirect('/events/new_event')
+
     if request.method == 'POST':
         if 'my_button' in request.POST:
             return redirect('home')
@@ -171,6 +174,8 @@ def events(request, view_type='month'):
             event.delete()  # Удаляем событие
             return redirect('/events')  # Перенаправляем обратно на страницу событий после удалени
             # я
+        elif 'new_event' in request.GET:
+            return redirect('/new_event')
         else:
             event_name = request.POST.get('name', None)
             messages.append(HumanMessage(content=event_name))
@@ -248,6 +253,9 @@ def week(request, select_week=None, selected_month=None, selected_year=None):
     if 'exit' in request.GET:
         return redirect('users:logout')
 
+    elif 'new_event' in request.GET:
+        return redirect('/events/new_event')
+
     if request.method == 'POST':
         if 'my_button' in request.POST:
             return redirect('home')
@@ -309,6 +317,9 @@ def day(
 ):
     if 'exit' in request.GET:
         return redirect('users:logout')
+
+    elif 'new_event' in request.GET:
+        return redirect('/events/new_event')
 
     if request.method == 'POST':
         form_day = DateSelectionForm(request.POST)
@@ -399,3 +410,21 @@ def day(
 
     return render(request, 'events/day.html', calendar_data)
 
+
+def new_event(request):
+    if request.method == "POST":
+        event_name = request.POST.get('name', None)
+        messages.append(HumanMessage(content=event_name))
+        res = chat(messages)
+        messages.append(res)
+        description_event = res.content
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.user = request.user
+            event.description = description_event
+            event.save()
+            return redirect('/events')
+    else:
+        form = EventForm()
+    return render(request, 'events/new_event.html', {'form': form})
