@@ -79,10 +79,10 @@ def week_view(request, select_week, selected_month, selected_year):
 
     context = {
         'selected_month': month[selected_month - 1], 'form': form, 'events': events,
-        'selected_year': YEARS[YEARS.index(name)][1], 'hours': hours,
+        'selected_year': selected_year, 'hours': hours,
         'days_of_month': days_of_month, 'current_week': current_week,
         'options': options, 'select_week': selected_week, 'current_month': month[current_month - 1],
-        'notification': notification, 'current_year': current_year
+        'notification': notification, 'current_year': current_year, 'month': selected_month
     }
 
     return context
@@ -294,14 +294,17 @@ def day(request):
             return redirect('home')
         elif 'delete_event_id' in request.POST:
             event_id = request.POST.get('delete_event_id')
-            try:
-                event = Event.objects.get(id=event_id)
-                event.delete()
-            except Event.DoesNotExist:
-                pass
-            return redirect('day')
-        elif 'day_select' in request.POST:
+            event = Event.objects.get(id=event_id)
+            event.delete()  # Удаляем событие
+            return redirect('day')  # Перенаправляем обратно на страницу событий после удаления
+        elif 'select_day' in request.POST:
             return redirect('day_selected_day', selected_year, selected_month, selected_day)
+        else:
+            event_name = request.POST.get('name', None)
+            messages.append(HumanMessage(content=event_name))
+            res = chat(messages)
+            messages.append(res)
+            description_event = res.content
 
         form = EventForm(request.POST)
         if form.is_valid():
@@ -337,24 +340,24 @@ def day(request):
     events = Event.objects.filter(date_start__year=selected_year,
                                   date_start__month=selected_month,
                                   user=request.user)
-    month_names = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
+    month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
                    'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
     hours_str = [f"{hour:02d}:00" for hour in range(1, 24)]
     hours_str.append('00:00')
     hours = [datetime.strptime(hour, '%H:%M') for hour in hours_str]
 
     notification = Notification.objects.filter(user=request.user)
+    form = EventForm()
 
     calendar_data = {
-        'form': EventForm(), 'form_day': form_day, 'events': events,
-        'current_month': month_names[selected_month - 1],
-        'month': selected_month, 'current_year': selected_year,
-        'days_of_month': days_of_month, 'current_day': selected_day,
-        'hours': hours, 'notification': notification
-    }
+        'form': form, 'form_day': form_day, 'events': events,
+        'selected_month': month[selected_month - 1],
+        'month': selected_month,
+        'selected_year': selected_year, 'days_of_month': days_of_month,
+        'current_day': selected_day,
+        'hours': hours, 'notification': notification}
 
     return render(request, 'events/day.html', calendar_data)
-
 
 @csrf_exempt
 def generate_description(request):
