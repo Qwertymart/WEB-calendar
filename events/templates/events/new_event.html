@@ -1,64 +1,111 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Новое событие</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить событие</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        body{
-            background-color:#2F303A;
+        body {
+            background-color: #2F303A;
         }
-        button{
-            background-color:#3A3C42;
-            border:none;
-            margin:10px;
-            height:45px; width:120px;
-            border-radius:10px;
-            cursor:pointer;
+        button {
+            background-color: #3A3C42;
+            border: none;
+            margin: 10px;
+            height: 45px; width: 120px;
+            border-radius: 10px;
+            cursor: pointer;
         }
-        .edit{
-            background-color:#555769;
-            color:#FFF;
-            padding-bottom:20px;
-            width:600px;
-            padding-left:70px;padding-top:20px;
-            border-radius:50px;
-            position:absolute;
-            margin-left:490px;
-            margin-top:20px;
+        .edit {
+            background-color: #555769;
+            color: #FFF;
+            padding-bottom: 20px;
+            width: 600px;
+            padding-left: 70px; padding-top: 20px;
+            border-radius: 50px;
+            position: absolute;
+            margin-left: 490px;
+            margin-top: 20px;
             overflow: visible;
             box-sizing: border-box;
             display: block;
         }
-        label{
-            float:left;
-            margin-right:5px;
-            height:30px;
+        label {
+            float: left;
+            margin-right: 5px;
+            height: 30px;
         }
-        input{
-            border-radius:10px;
-            height:20px;
-            margin-bottom:10px;
-            padding-left:5px;
-            border:none;
+        select {
+            margin-bottom: 10px;
+            border-radius: 10px;
+            width: 120px;
         }
-        h2{
-            padding-left:120px;
-            color:#1C1C1C;
-            margin-top:-10px;
+        input {
+            border-radius: 10px;
+            height: 20px;
+            margin-bottom: 12px;
+            padding-left: 5px;
+            border: none;
         }
-        .dis{
-            display:none;
-            background-color:#FFF;
-            border:1 px solid black;
-            color:#000;
-            width:350px;
-            border-radius:20px;
-            padding:10px;
+        h2 {
+            padding-left: 120px;
+            color: #1C1C1C;
+            margin-top: -10px;
+        }
+        .dis {
+            display: none;
+            background-color: #FFF;
+            border: 1px solid black;
+            color: #000;
+            width: 350px;
+            border-radius: 20px;
+            padding: 10px;
+        }
+        .lab {
+            margin-left: -90px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
+<div class="edit">
+    <img hspace="130px" src="{% static 'events/img/image_2024-04-29_11-20-12.png' %}" alt="pict" width="110px">
+    <h2>TimeTracer</h2>
+    <h3>Добавить событие:</h3>
     <form id="event-form" method="POST">
         {% csrf_token %}
         <label for="id_name">Название:</label>
@@ -67,13 +114,11 @@
         <label for="id_date_start">Дата начала:</label>
         <input type="date" id="id_date_start" name="date_start">
         <br>
-        <br>
         <label for="id_time_start">Время начала:</label>
         <input type="time" id="id_time_start" name="time_start">
         <br>
         <label for="id_date_finish">Дата окончания:</label>
         <input type="date" id="id_date_finish" name="date_finish">
-        <br>
         <br>
         <label for="id_time_finish">Время окончания:</label>
         <input type="time" id="id_time_finish" name="time_finish">
@@ -84,7 +129,7 @@
         <label for="id_periodicity">Повторения:</label>
         {{ form.periodicity }}
         <br>
-        <label for="id_end_date">Окончание повторений:</label>
+        <label class="lab" for="id_end_date">Окончание повторений:</label>
         <input type="date" id="id_end_date" name="end_date">
         <br>
         <label for="id_description">Описание:</label>
@@ -92,45 +137,64 @@
         <br>
         <button type="button" id="generate-description-button" name="description">Добавить описание ИИ</button>
         <br>
-        <div id="description_suggestion" class="dis">
-            <h4>Предложенное описание:</h4>
-            <p id="generated-description"></p>
-            <button type="button" id="accept-description-button">Согласиться</button>
-        </div>
-        <br>
-        <button type="submit" name="save_button">Добавить</button>
-
+        <button type="submit" name="save_button">Добавить событие</button>
     </form>
-    <script>
-        $(document).ready(function() {
-            $('#generate-description-button').click(function() {
-                const eventName = $('#id_name').val();
-                if (eventName) {
-                    $.ajax({
-                        type: 'POST',
-                        url: '{% url "generate_description" %}',
-                        data: {
-                            'name': eventName,
-                            'csrfmiddlewaretoken': '{{ csrf_token }}'
-                        },
-                        success: function(response) {
-                            $('#generated-description').text(response.description);
-                            $('#description_suggestion').show();
-                        },
-                        error: function(xhr, status, error) {
-                            alert('Ошибка при генерации описания');
-                        }
-                    });
-                } else {
-                    alert('Пожалуйста, введите название события.');
-                }
-            });
+</div>
 
-            $('#accept-description-button').click(function() {
-                const generatedDescription = $('#generated-description').text();
-                $('textarea[name="description"]').val(generatedDescription);
-            });
+<!-- The Modal -->
+<div id="descriptionModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h4>Предложенное описание:</h4>
+        <p id="generated-description"></p>
+        <button type="button" id="accept-description-button">Согласиться</button>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        var modal = document.getElementById("descriptionModal");
+        var span = document.getElementsByClassName("close")[0];
+
+        $('#generate-description-button').click(function() {
+            const eventName = $('#id_name').val();
+            if (eventName) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "generate_description" %}',
+                    data: {
+                        'name': eventName,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        $('#generated-description').text(response.description);
+                        modal.style.display = "block";
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Ошибка при генерации описания');
+                    }
+                });
+            } else {
+                alert('Пожалуйста, введите название события.');
+            }
         });
-    </script>
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        $('#accept-description-button').click(function() {
+            const generatedDescription = $('#generated-description').text();
+            $('textarea[name="description"]').val(generatedDescription);
+            modal.style.display = "none";
+        });
+    });
+</script>
 </body>
 </html>

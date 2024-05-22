@@ -89,16 +89,6 @@ def week_view(request, select_week, selected_month, selected_year):
 
 
 def events(request, view_type='month'):
-    def select_view():
-        # Если нажата кнопка submit при выборе отображения
-        if 'view_button' in request.GET:
-            temp = request.GET.get('view type', None)  # Получаем, что выбрали
-            if temp == 'month':
-                return redirect('events')  # Остаемся в той же вкладке
-            elif temp == 'week':
-                return redirect('week')  # Летим в week, чтобы уже работать в функции week на новой странице
-            elif temp == 'day':
-                return redirect('day')
 
     user_events = Event.objects.filter(user=request.user)
 
@@ -173,8 +163,7 @@ def events(request, view_type='month'):
             return redirect('/new_event')
 
     else:  # else для method GET
-        view_type = request.GET.get('view type', view_type)
-        print(view_type)
+        view_type = request.GET.get('view_type', view_type)
         if view_type == 'week':
             return redirect('week')
         elif view_type == 'day':
@@ -221,7 +210,12 @@ def events(request, view_type='month'):
     return render(request, 'events/events.html', context)
 
 
-def week(request, select_week=None, selected_month=None, selected_year=None):
+def week(request):
+    selected_month = timezone.now().month
+    select_week = get_week_number_in_month(timezone.now())
+    selected_year = timezone.now().year
+    view_type = 'week'
+
     if 'exit' in request.GET:
         return redirect('users:logout')
 
@@ -251,15 +245,12 @@ def week(request, select_week=None, selected_month=None, selected_year=None):
                 event.save()
                 return redirect('week')
     else:
-        if 'view_button' in request.GET:
-            form = ViewTypeForm()
-            temp = request.GET.get('view type', None)
-            if temp == 'month':
-                return redirect('events')
-            elif temp == 'week':
-                return redirect('week')
-            elif temp == 'day':
-                return redirect('day')
+        form_day = DateSelectionForm()
+        view_type = request.GET.get('view_type', view_type)
+        if view_type == 'day':
+            return redirect('day')
+        elif view_type == 'month':
+            return redirect('events')
 
     select_week = request.GET.get('select_week', select_week)
     selected_month = request.GET.get('selected_month', selected_month)
@@ -280,16 +271,14 @@ def week(request, select_week=None, selected_month=None, selected_year=None):
 
     return render(request, template_name, calendar_data)
 
+def day(request):
+    selected_month = timezone.now().month
+    selected_year = timezone.now().year
+    selected_day = timezone.now().day
+    view_type = 'day'
 
-def day(
-        request,
-        selected_month=timezone.now().month,
-        selected_year=timezone.now().year,
-        selected_day=timezone.now().day
-):
     if 'exit' in request.GET:
         return redirect('users:logout')
-
     elif 'new_event' in request.GET:
         return redirect('/events/new_event')
 
@@ -297,57 +286,43 @@ def day(
         form_day = DateSelectionForm(request.POST)
         if form_day.is_valid():
             selected_date = form_day.cleaned_data['selected_date']
-            selected_year = selected_date.year if selected_date.year is not None else selected_year
-            selected_month = selected_date.month if selected_date.month is not None else selected_month
-            selected_day = selected_date.day if selected_date.day is not None else selected_day
+            selected_year = selected_date.year or selected_year
+            selected_month = selected_date.month or selected_month
+            selected_day = selected_date.day or selected_day
 
-            day_of_week = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su']
         if 'my_button' in request.POST:
             return redirect('home')
-        elif 'delete_event_id' in request.POST:  # Проверяем, было ли отправлено сообщение об удалении
+        elif 'delete_event_id' in request.POST:
             event_id = request.POST.get('delete_event_id')
-            event = Event.objects.get(id=event_id)
-            event.delete()  # Удаляем событие
-            return redirect('day')  # Перенаправляем обратно на страницу событий после удаления
+            try:
+                event = Event.objects.get(id=event_id)
+                event.delete()
+            except Event.DoesNotExist:
+                pass
+            return redirect('day')
         elif 'day_select' in request.POST:
             return redirect('day_selected_day', selected_year, selected_month, selected_day)
-        else:
-            event_name = request.POST.get('name', None)
-            messages.append(HumanMessage(content=event_name))
-            res = chat(messages)
-            messages.append(res)
-            description_event = res.content
 
-            form = EventForm(request.POST)
-
-            if form.is_valid():
-                event = form.save(commit=False)
-                event.user = request.user
-                event.description = description_event
-                event.save()
-                return redirect('day')
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.user = request.user
+            event.save()
+            return redirect('day')
     else:
         form_day = DateSelectionForm()
-        if 'view_button' in request.GET:  # Если нажата кнопка submit при выборе отображения
-            temp = request.GET.get('view type', None)  # Получаем, что выбрали
-            if temp == 'month':
-                return redirect('events')  # Остаемся в той же вкладке
-            elif temp == 'week':
-                return redirect('week')  # Летим в week, чтобы уже работать в функции week на новой странице
-            elif temp == 'day':
-                return redirect('day')  # Летим в day, чтобы уже работать в функции day на новой странице
+        view_type = request.GET.get('view_type', view_type)
+        if view_type == 'week':
+            return redirect('week')
+        elif view_type == 'month':
+            return redirect('events')
 
-        form = EventForm()
-
-    # for element in YEARS:
-    #     if element[0] == str(selected_year):
-    #         name = element
 
     first_weekday, num_days = monthrange(selected_year, selected_month)
     num_padding_days = (first_weekday) % 7
     days_of_month = []
     week_of_month = []
-    for i in range(num_padding_days):
+    for _ in range(num_padding_days):
         week_of_month.append(None)
     for day_of_month in range(1, num_days + 1):
         week_of_month.append(datetime(selected_year, selected_month, day_of_month))
@@ -362,25 +337,24 @@ def day(
     events = Event.objects.filter(date_start__year=selected_year,
                                   date_start__month=selected_month,
                                   user=request.user)
-    month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
-             'Сентябрь', 'Август', 'Ноябрь', 'Декабрь']
+    month_names = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
+                   'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
     hours_str = [f"{hour:02d}:00" for hour in range(1, 24)]
     hours_str.append('00:00')
-    hours = []
-    for i in hours_str:
-        hours.append(datetime.strptime(i, '%H:%M'))
+    hours = [datetime.strptime(hour, '%H:%M') for hour in hours_str]
 
     notification = Notification.objects.filter(user=request.user)
-    # YEARS[YEARS.index(name)][1]
+
     calendar_data = {
-        'form': form, 'form_day': form_day, 'events': events,
-        'current_month': month[selected_month - 1],
-        'month': selected_month,
-        'current_year': selected_year, 'days_of_month': days_of_month,
-        'current_day': selected_day,
-        'hours': hours, 'notification': notification}
+        'form': EventForm(), 'form_day': form_day, 'events': events,
+        'current_month': month_names[selected_month - 1],
+        'month': selected_month, 'current_year': selected_year,
+        'days_of_month': days_of_month, 'current_day': selected_day,
+        'hours': hours, 'notification': notification
+    }
 
     return render(request, 'events/day.html', calendar_data)
+
 
 @csrf_exempt
 def generate_description(request):

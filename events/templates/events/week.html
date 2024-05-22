@@ -150,19 +150,24 @@
         {% endif %}
     </div>
     <!-- для выбора отображения календаря-->
-    <div class="shapka" style="text-align:right">
-        <h3>Выберете отображение</h3>
-        <form method="GET">
-            {% csrf_token %}
-            {{ ViewTypeForm }}
-            <select name="view type">
-                <option value="month">month</option>
-                <option value="week">week</option>
-                <option value="day">day</option>
-            </select>
-            <input type = "submit" value = "Выбрать" name="view_button">
-        </form>
+    <div>
+    <h3>Выберите отображение</h3>
+    <form method="GET" id="viewForm">
+        {% csrf_token %}
+        <select name="view_type" id="viewSelect">
+            <option value="...">...</option>
+            <option value="month">month</option>
+            <option value="week">week</option>
+            <option value="day">day</option>
+        </select>
+        <br>
+    </form>
     </div>
+    <script>
+    document.getElementById('viewSelect').addEventListener('change', function() {
+        document.getElementById('viewForm').submit();
+    });
+    </script>
     <!--текущая дата(я вообще хз, надо это или нет)-->
     <div class="shapka">
         {% if current_month and current_year %}
