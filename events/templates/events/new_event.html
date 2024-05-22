@@ -63,6 +63,8 @@
             width:350px;
             border-radius:20px;
             padding:10px;
+            top:50px;
+            left:50px;
         }
         .lab{
             margin-left:-90px;
@@ -104,14 +106,16 @@
         {{ form.description }}
         <br>
         <button type="button" id="generate-description-button" name="description">Добавить описание ИИ</button>
-        <div id="description_suggestion" class="dis">
+
+
+        <button type="submit" name="save_button">Добавить событие</button>
+    </form>
+    </div>
+    <div id="description_suggestion" class="dis">
             <h4>Предложенное описание:</h4>
             <p id="generated-description"></p>
             <button type="button" id="accept-description-button">Согласиться</button>
         </div>
-        <br>
-        <button type="submit" name="save_button">Добавить событие</button>
-    </form>
     <!--Реализация получения ответа гигачата-->
     <script>
         $(document).ready(function() {
@@ -144,6 +148,6 @@
             });
         });
     </script>
-</div>
+
 </body>
 </html>

@@ -309,7 +309,7 @@ def day(
             event = Event.objects.get(id=event_id)
             event.delete()  # Удаляем событие
             return redirect('day')  # Перенаправляем обратно на страницу событий после удаления
-        elif 'day_select' in request.POST:
+        elif 'select_day' in request.POST:
             return redirect('day_selected_day', selected_year, selected_month, selected_day)
         else:
             event_name = request.POST.get('name', None)
@@ -374,9 +374,9 @@ def day(
     # YEARS[YEARS.index(name)][1]
     calendar_data = {
         'form': form, 'form_day': form_day, 'events': events,
-        'current_month': month[selected_month - 1],
+        'selected_month': month[selected_month - 1],
         'month': selected_month,
-        'current_year': selected_year, 'days_of_month': days_of_month,
+        'selected_year': selected_year, 'days_of_month': days_of_month,
         'current_day': selected_day,
         'hours': hours, 'notification': notification}
 

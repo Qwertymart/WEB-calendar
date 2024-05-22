@@ -11,20 +11,24 @@
             color:#FFF;
         }
         aside{
-            background-color:;
             height:200px;
             width:230px;
             float:left;
+            margin-top:-60px;
         }
         header{
-            height:120px;
+            height:50px;
+            width:100hv;
+            margin-left:200px;
         }
         table {
+            margin-top:15px;
             border-collapse: collapse;
             background-color:#3F414D;
             border-radius:30px;
             margin-left: 10px;
-            width:1240px;
+            width:1270px;
+
         }
         /* 2 штучки для прокуртки таблицы недели(шапка остаётся на месте)*/
         .thead{
@@ -34,53 +38,43 @@
         }
         .tbody{
             overflow-y: auto;
-            height: 690px;;
-        }
+            height: 690px;
         }
         th, td {
             color:#FFF;
         }
         td {
             border: 1px solid black;
-            height:100px;
-            width:100px;
+            height:140px;
+            width:181px;
         }
         th{
             background-color:#2F303A;
-            height:70px;
-
+            height:15px;
+            border-top:1px solid grey;
         }
         label{
             color:#000;
         }
-        .week{
-            height:15px;
-        }
-        .time{
-            border:none;
-            background-color:#2F303A;
-            width:10px;
-            padding-right:0px;
-            valign:bottom;
-        }
-        .shapka{
-            display: inline-block;
-            margin-right:120px;
-            wight: 300px;
-            margin-top:-10px;
-        }
         .dis{
-            font-size: 15px;
+            font-family:'Gabriola';
+            font-size: 17px;
+            padding-right:5px;
             padding-left:5px;
+            padding-bottom:5px;
             margin-top:0px;
-            width:130px;
+            height:20px;
+            color:#FFF;
+            text-align:center;
+            border-radius:7px;
+            display:inline-block;
         }
         a{
-            color:#FFF;
-            background-color:#0068FF;
             text-decoration: none;
+            width:140px;
+            color:#FFF;
         }
-        /*2 штуки для удаления*/
+        /*для удаления*/
         .del{
             display: none;
             top: 60px;
@@ -90,9 +84,9 @@
         .show {
             display: block;
         }
-        /* 2 штучки дял открытия формы добавления события*/
+        /* 3 штучки дял открытия формы добавления события*/
         .open-button {
-          background-color: #555;
+          background-color: #606072;
           color: white;
           border: none;
           cursor: pointer;
@@ -100,6 +94,10 @@
           height:50px;
           margin-top:35px;
           border-radius:25px;
+        }
+        .open-button:hover{
+            background-color:#47495C;
+            transition: 0.7s;
         }
         .form-popup {
           display: none;
@@ -110,7 +108,7 @@
         /* 2 штучки, чтобы при наведении появлялось описание события */
         .event{
             color:#D8C26E;
-            height:20px;
+            height:25px;
             width:130px;
             font-size: 20px;
             text-align:left;
@@ -119,79 +117,86 @@
         .event:hover::after {
             content: attr(data-title); /* Выводим текст */
             margin-top:20px; margin-left: -20px;
-            width: 155px; height: 100px;
+            width: 180px; height: 200px;
             position: absolute;/* Положение подсказки */
             z-index: 1; /* Отображаем подсказку поверх других элементов */
             background-color:#2F3030; /* Полупрозрачный цвет фона */
-            font-size: 20px; /* Размер текста подсказки */
+            font-size: 17px; /* Размер текста подсказки */
             border: 1px solid #FFF; /* Параметры рамки */
             color:#FFF;
         }
-        /*2 штучки для уведомлений*/
+        /*3 штучки для уведомлений*/
         .button {
             width: 100px;
             height: 25px;
             border: none;
-            border-radius: 10px;
+            border-radius: 7px;
             cursor: pointer;
+        }
+        .button:hover{
+            background-color:#47495C;
+            transition: 0.7s;
         }
         .popup {
             overflow: auto;
             display:none;
             background-color: #FFF;
             color:#000;
-            width: 170px; height:80px;
-            margin-left:-60px;
+            width: 170px; height:100px;
+            position: absolute;
+            border-radius:10px;
+            padding:10px;
+            z-index:0;
         }
         .exit{
-            border-radius:10px;
+            border-radius:7px;
             border:none;
             width:65px;
             height:25px;
+        }
+        .exit:hover{
+            background-color:#47495C;
+            transition: 0.7s;
         }
         select{
             height: 25px;
             border-radius:7px;
         }
-        option{
+        .ok{
+            display:inline-block;
+            margin-left:490px;
+        }
+        .ex{
+            border-radius:7px;
             border:none;
-            border-radius:10px;
+            width:70px;
+            height:25px;
+            background-color:#C41919;
+        }
+        .ex:hover{
+            background-color:#690707;
+            transition: 0.7s;
+        }
+        .time{
+            border:none;
+            width:35px;
+            background-color:#2F303A;
+        }
+        .week{
+            border:none;
         }
     </style>
 </head>
 <body>
 <header>
-    <div class="shapka">
-        <img src="{% static 'events/img/image_2024-04-29_11-20-12.png' %}" alt="pict" width="100px">
-    </div>
     <!-- для показа даты, которую выбрали-->
-    <div style="text-align:left" class="shapka">
+    <div class="ok" style="margin-top:5px;">
         {% if selected_year and selected_month %}
-            {{ selected_month }} {{ selected_year }} <br> {{ select_week }} неделя
-        {% endif %}
-    </div>
-    <!-- для выбора отображения календаря-->
-    <div class="shapka" style="text-align:right">
-        <h3>Выберете отображение</h3>
-        <form method="GET">
-            {% csrf_token %}
-            {{ ViewTypeForm }}
-            <select name="view type">
-                <option value="month">month</option>
-                <option value="week">week</option>
-                <option value="day">day</option>
-            </select>
-            <input class="exit" type = "submit" value = "Выбрать" name="view_button">
-        </form>
-    </div>
-    <!--текущая дата(я вообще хз, надо это или нет)-->
-    <div class="shapka">
-        {% if current_month and current_year %}
-            <h3 align="right">Сегодня {{ current_month }} {{ current_year }}</h3>
+            <h3>{{ selected_month }} {{ selected_year }}</h3>
         {% endif %}
     </div>
     <!--Уведомления-->
-    <div class="shapka">
+    <div class="ok">
         <button class="button" onclick="togglePopup()">Уведомления</button>
         <div class="popup" id="popup">
                 {% for not in notification %}
@@ -200,7 +205,6 @@
                     </div>
                 {% endfor %}
         </div>
-    </div>
     <script>
         function togglePopup() {
             var popup = document.getElementById("popup");
@@ -211,15 +215,19 @@
             }
         }
     </script>
+    </div>
     <!--Для выхода-->
-    <div class="shapka">
+    <div class="ok" style="margin-left:10px;">
         <form method="GET">
             {% csrf_token %}
-            <button class="exit" type = "submit" value = "Exit" name="exit">Выйти</button>
+            <button  class="ex" type = "submit" value = "Exit" name="exit">Выйти</button>
         </form>
     </div>
 </header>
 <aside>
+    <div class="im">
+        <img src="{% static 'events/img/image_2024-04-29_11-20-12.png' %}" alt="pict" width="170px">
+    </div>
     <!--для выбора даты для неделя-->
         <h2>Выберите дату:</h2>
         <form method="GET">
@@ -258,7 +266,6 @@
             <option value="12" {% if month == 12 %}selected{% endif %}>Декабрь</option>
         </select>
     <!--Выбор недели: динамическое определение количества недель в месяце. -->
-        {{ WeekNumberForm }}
             <input type="hidden" name="view_type" value="{{ view_type }}">
             <select name="select_week">
                 {% for option in options %}
@@ -267,6 +274,26 @@
             </select>
             <input class="exit" style="margin-top:8px;width:180px;" type="submit" value="Выбрать" name="week_to_show">
     </form>
+    <div>
+    <h3>Выберите отображение</h3>
+    <form method="GET" id="viewForm">
+        {% csrf_token %}
+
+        <select name="view_type" id="viewSelect">
+            <option value="month">month</option>
+            <option value="week">week</option>
+            <option value="day">day</option>
+        </select>
+        <br>
+        <input class="exit" style="margin-top:8px; width:65px;" type="submit" value="Выбрать" name="view_button">
+    </form>
+    </div>
+
+    <script>
+    document.getElementById('viewSelect').addEventListener('change', function() {
+        document.getElementById('viewForm').submit();
+    });
+    </script>
     <!-- вот реализация добавления события-->
     <form method="GET">
             {% csrf_token %}
@@ -280,46 +307,20 @@
           document.getElementById("myForm").style.display = "none";
         }
     </script>
-    <!--Для удаления событий-->
-    <button class="open-button" onclick="del()">Удалить событие</button>
-    <div class="del" id="delete">
-        {% for event in events %}
-        {% for day in current_week %}
-        {% if day.day == event.date_start.day %}
-            <h3>{{ event.name }}</h3>
-            <h3>{{ event.user }}</h3>
-            <p><strong>Start Date:</strong> {{ event.date_start }} {{ event.time_start }}</p>
-            <p><strong>Finish Date:</strong> {{ event.date_finish }} {{ event.time_finish }}</p>
-            <p><strong>Description:</strong> {{ event.description }}</p>
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="delete_event_id" value="{{ event.id }}">
-                <button type="submit">Delete</button>
-            </form>
-        {% endif %}
-        {% endfor %}
-        {% endfor %}
-    </div>
-    <script>
-        function del() {
-                var del = document.getElementById("delete");
-                del.classList.toggle("show");
-            }
-    </script>
 </aside>
 <main>
     <!--вот тут уже для таблиц недели-->
     <table>
         <thead class="thead">
         <tr>
-            <th class="week"></th>
-            <th class="week">Пн</th>
-            <th class="week">Вт</th>
-            <th class="week">Ср</th>
-            <th class="week">Чт</th>
-            <th class="week">Пт</th>
-            <th class="week">Сб</th>
-            <th class="week">Вс</th>
+            <th></th>
+            <th>Пн</th>
+            <th>Вт</th>
+            <th>Ср</th>
+            <th>Чт</th>
+            <th>Пт</th>
+            <th>Сб</th>
+            <th>Вс</th>
         </tr>
         <tr>
             <th class="week"></th>
