@@ -347,6 +347,7 @@ def day(request):
     hours = [datetime.strptime(hour, '%H:%M') for hour in hours_str]
 
     notification = Notification.objects.filter(user=request.user)
+    form = EventForm()
 
     calendar_data = {
         'form': form, 'form_day': form_day, 'events': events,

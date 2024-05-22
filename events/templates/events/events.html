@@ -215,12 +215,6 @@ document.getElementById('viewSelect').addEventListener('change', function() {
     document.getElementById('viewForm').submit();
 });
 </script>
-    <!--текущая дата(я вообще хз, надо это или нет)-->
-    <div class="shapka">
-        {% if current_month and current_year %}
-            <h3 align="right">Сегодня {{ current_month }} {{ current_year }}</h3>
-        {% endif %}
-    </div>
     <!--Уведомления-->
     <div class="ok">
         <button class="button" onclick="togglePopup()">Уведомления</button>
