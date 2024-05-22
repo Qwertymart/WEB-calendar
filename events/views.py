@@ -385,7 +385,6 @@ def day(
 @csrf_exempt
 def generate_description(request):
     if request.method == "POST":
-        print('зашли в генерейт')
         event_name = request.POST.get('name', None)
         messages.append(HumanMessage(content=event_name))
         res = chat(messages)
@@ -396,10 +395,8 @@ def generate_description(request):
 
 def new_event(request):
     if request.method == "POST":
-        print('зашел в основу')
         form = EventForm(request.POST)
         if form.is_valid():
-            print('прошел валидность')
             event = form.save(commit=False)
             event.user = request.user
             periodicity = form.cleaned_data['periodicity']

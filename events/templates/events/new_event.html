@@ -4,6 +4,59 @@
     <meta charset="UTF-8">
     <title>Новое событие</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body{
+            background-color:#2F303A;
+        }
+        button{
+            background-color:#3A3C42;
+            border:none;
+            margin:10px;
+            height:45px; width:120px;
+            border-radius:10px;
+            cursor:pointer;
+        }
+        .edit{
+            background-color:#555769;
+            color:#FFF;
+            padding-bottom:20px;
+            width:600px;
+            padding-left:70px;padding-top:20px;
+            border-radius:50px;
+            position:absolute;
+            margin-left:490px;
+            margin-top:20px;
+            overflow: visible;
+            box-sizing: border-box;
+            display: block;
+        }
+        label{
+            float:left;
+            margin-right:5px;
+            height:30px;
+        }
+        input{
+            border-radius:10px;
+            height:20px;
+            margin-bottom:10px;
+            padding-left:5px;
+            border:none;
+        }
+        h2{
+            padding-left:120px;
+            color:#1C1C1C;
+            margin-top:-10px;
+        }
+        .dis{
+            display:none;
+            background-color:#FFF;
+            border:1 px solid black;
+            color:#000;
+            width:350px;
+            border-radius:20px;
+            padding:10px;
+        }
+    </style>
 </head>
 <body>
     <form id="event-form" method="POST">
@@ -39,7 +92,7 @@
         <br>
         <button type="button" id="generate-description-button" name="description">Добавить описание ИИ</button>
         <br>
-        <div id="description_suggestion" style="display:none;">
+        <div id="description_suggestion" class="dis">
             <h4>Предложенное описание:</h4>
             <p id="generated-description"></p>
             <button type="button" id="accept-description-button">Согласиться</button>
