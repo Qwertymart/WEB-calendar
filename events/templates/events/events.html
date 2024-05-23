@@ -9,6 +9,12 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <title>Events</title>
     <style>
+        @font-face {
+            font-family: 'IBMPlexSans-Medium';
+            src: url('/static/events/css/IBMPlexSans-Medium.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
         body{
             background-color:#2F303A;
             color:#FFF;
@@ -33,7 +39,7 @@
             border-radius:30px;
             margin-left: 10px;
             width:1270px;
-
+            font-family: 'IBMPlexSans-Medium', sans-serif;
         }
         /* 2 штучки для прокуртки таблицы недели(шапка остаётся на месте)*/
         .thead{
@@ -61,35 +67,23 @@
         label{
             color:#000;
         }
+        /*2 штучки для отображения события в ячейке*/
         .dis{
-            font-family:'Gabriola';
-            font-size: 17px;
+            font-size: 13px;
             padding-right:5px;
             padding-left:5px;
-            padding-bottom:5px;
-            margin-top:0px;
             height:20px;
             color:#FFF;
-            text-align:center;
             border-radius:7px;
             display:inline-block;
+            font-family: 'IBMPlexSans-Medium', sans-serif;
         }
         a{
             text-decoration: none;
             width:140px;
             color:#FFF;
         }
-        /*для удаления*/
-        .del{
-            display: none;
-            top: 60px;
-            background-color:#3A3A3F;
-            border: 1px solid black;
-        }
-        .show {
-            display: block;
-        }
-        /* 3 штучки дял открытия формы добавления события*/
+        /* 2 штучки дял открытия формы добавления события*/
         .open-button {
           background-color: #606072;
           color: white;
@@ -99,36 +93,30 @@
           height:50px;
           margin-top:15px;
           border-radius:25px;
+          font-family: 'IBMPlexSans-Medium', sans-serif;
         }
         .open-button:hover{
             background-color:#47495C;
             transition: 0.7s;
         }
-        .form-popup {
-          display: none;
-          top: 60px;
-          background-color:#3A3A3F;
-          border: 1px solid black;
-        }
         /* 2 штучки, чтобы при наведении появлялось описание события */
         .event{
             color:#D8C26E;
-            height:25px;
+            height:20px;
             width:130px;
-            font-size: 20px;
-            text-align:left;
             overflow:hidden;
         }
         .event:hover::after {
             content: attr(data-title); /* Выводим текст */
-            margin-top:20px; margin-left: -20px;
-            width: 180px; height: 200px;
+            margin-top:20px; margin-left:-100px;
+            width: 220px; height:100px;
             position: absolute;/* Положение подсказки */
             z-index: 1; /* Отображаем подсказку поверх других элементов */
             background-color:#2F3030; /* Полупрозрачный цвет фона */
             font-size: 17px; /* Размер текста подсказки */
             border: 1px solid #FFF; /* Параметры рамки */
             color:#FFF;
+            overflow:auto;
         }
         /*3 штучки для уведомлений*/
         .button {
@@ -137,6 +125,7 @@
             border: none;
             border-radius: 7px;
             cursor: pointer;
+            font-family: 'IBMPlexSans-Medium', sans-serif;
         }
         .button:hover{
             background-color:#47495C;
@@ -147,19 +136,21 @@
             display:none;
             background-color: #FFF;
             color:#000;
-            width: 170px; height:100px;
+            width: 170px; height:200px;
+            margin-left:-50px;
             position: absolute;
             border-radius:10px;
             padding:10px;
             z-index:0;
         }
+        /*кнопочки*/
         .exit{
             border-radius:7px;
             border:none;
             width:65px;
             height:25px;
             cursor:pointer;
-
+            font-family: 'IBMPlexSans-Medium', sans-serif;
         }
         .exit:hover{
             background-color:#47495C;
@@ -168,12 +159,14 @@
         select{
             height: 25px;
             border-radius:7px;
-
+            font-family: 'IBMPlexSans-Medium', sans-serif;
         }
+        /*блоки в строку*/
         .ok{
             display:inline-block;
             margin-right:300px;
         }
+        /*ещё кпоночки*/
         .ex{
             border-radius:7px;
             border:none;
@@ -181,12 +174,12 @@
             height:25px;
             background-color:#C41919;
             cursor:pointer;
+            font-family: 'IBMPlexSans-Medium', sans-serif;
         }
         .ex:hover{
             background-color:#690707;
             transition: 0.7s;
         }
-
     </style>
 </head>
 <body>
@@ -198,11 +191,11 @@
         {% endif %}
     </div>
     <!-- для выбора отображения календаря-->
-    <div class="ok" style="margin-right:20px;">
+    <div class="ok" style="margin-right:10px;">
     <form method="GET" id="viewForm">
         {% csrf_token %}
-        <select name="view_type" id="viewSelect">
-            <option value="...">Выбери</option>
+        <select style="width:160px;"name="view_type" id="viewSelect">
+            <option value="...">Выбери отображение</option>
             <option value="month">Месяц</option>
             <option value="week">Неделя</option>
             <option value="day">День</option>
@@ -210,19 +203,19 @@
     </form>
     </div>
     <script>
-    document.getElementById('viewSelect').addEventListener('change', function() {
-        document.getElementById('viewForm').submit();
-    });
+        document.getElementById('viewSelect').addEventListener('change', function() {
+            document.getElementById('viewForm').submit();
+        });
     </script>
     <!--Уведомления-->
     <div class="ok" style="margin-right:10px;">
         <button class="button" onclick="togglePopup()">Уведомления</button>
         <div class="popup" id="popup">
-                {% for not in notification %}
-                    <div class="not">
-                        {{ not.text }} {{ not.created_at }}
-                    </div>
-                {% endfor %}
+            {% for not in notification %}
+                <div class="not">
+                    {{ not.text }} {{ not.created_at }}
+                </div>
+            {% endfor %}
         </div>
     <script>
         function togglePopup() {

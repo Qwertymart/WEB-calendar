@@ -7,6 +7,12 @@
     <title>Добавить событие</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
+        @font-face {
+            font-family: 'IBMPlexSans-Medium';
+            src: url('/static/events/css/IBMPlexSans-Medium.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
         body {
             background-color: #2F303A;
         }
@@ -20,6 +26,7 @@
             cursor: pointer;
             color: white;
         }
+        /*основной блок*/
         .edit {
             background-color: #555769;
             color: #FFF;
@@ -30,7 +37,6 @@
             margin-left: 490px;
             margin-top: 20px;
             height:650px;
-
         }
         label {
             float: left;
@@ -43,6 +49,7 @@
             border-radius: 10px;
             width: 120px;
             padding-left:5px;
+
         }
         input[type="color"]{
             border-radius:10px;
@@ -65,6 +72,7 @@
         h3 {
             color: white;
         }
+        /*2 штучки для всплывающего окна с описанием ИИ*/
         .modal {
             display: none;
             position: fixed;
@@ -83,10 +91,8 @@
             margin: 5% auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 80%;
+            width: 60%;
             border-radius: 10px;
-        }
-        .modal-buttons {
         }
         textarea{
             border-radius:15px;
@@ -117,7 +123,7 @@
             <label for="id_time_finish">Время окончания:</label>
             <input type="time" id="id_time_finish" name="time_finish">
             <br>
-            <label for="id_color">Color:</label>
+            <label for="id_color">Цвет:</label>
             <input type="color" id="id_color" name="color">
             <br>
             <label for="id_periodicity">Повторения:</label>
@@ -133,6 +139,7 @@
             <button type="submit" name="save_button">Добавить событие</button>
         </form>
     </div>
+    <!--плашечка для описания ИИ-->
     <div id="description-modal" class="modal">
         <div class="modal-content">
             <h4>Предложенное описание:</h4>
@@ -143,6 +150,7 @@
             </div>
         </div>
     </div>
+    <!--Для появления плашечки и сбора информации от гигачата-->
     <script>
         $(document).ready(function() {
             const modal = $('#description-modal');

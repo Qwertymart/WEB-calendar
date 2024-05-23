@@ -288,7 +288,7 @@ def day(request, selected_month=None, selected_year=None, selected_day=None):
         return redirect('/events/new_event')
 
     if request.method == 'POST':
-        form_day = DateSelectionForm(request.POST)
+        form_day = DateSelectionForm(request.POST, initial={'selected_date': f'{selected_year}-{selected_month}-{selected_day}'})
         if form_day.is_valid():
             selected_date = form_day.cleaned_data['selected_date']
             selected_year = selected_date.year or selected_year
@@ -318,7 +318,7 @@ def day(request, selected_month=None, selected_year=None, selected_day=None):
             event.save()
             return redirect('day')
     else:
-        form_day = DateSelectionForm()
+        form_day = DateSelectionForm(initial={'selected_date': f'{selected_year}-{selected_month}-{selected_day}'})
         view_type = request.GET.get('view_type', view_type)
         if view_type == 'week':
             return redirect('week')
@@ -345,8 +345,8 @@ def day(request, selected_month=None, selected_year=None, selected_day=None):
     events = Event.objects.filter(date_start__year=selected_year,
                                   date_start__month=selected_month,
                                   user=request.user)
-    month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
-                   'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+    month = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа',
+                   'Сентября', 'Октября', 'Ноября', 'Декабря']
 
     hours_str =['00:00'] + [f"{hour:02d}:00" for hour in range(1, 24)]
     hours = [datetime.strptime(hour, '%H:%M') for hour in hours_str]
