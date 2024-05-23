@@ -7,118 +7,146 @@
     <title>Добавить событие</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        body{
-            background-color:#2F303A;
+        body {
+            background-color: #2F303A;
         }
-        button{
-            background-color:#3A3C42;
-            border:none;
-            margin:10px;
-            height:45px; width:120px;
-            border-radius:10px;
-            cursor:pointer;
+        button {
+            background-color: #3A3C42;
+            border: none;
+            margin: 10px;
+            height: 45px;
+            width: 120px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
         }
-        .edit{
-            background-color:#555769;
-            color:#FFF;
-            padding-bottom:20px;
-            width:600px;
-            padding-left:70px;padding-top:20px;
-            border-radius:50px;
-            position:absolute;
-            margin-left:490px;
-            margin-top:20px;
-            overflow: visible;
-            box-sizing: border-box;
-            display: block;
-        }
-        label{
-            float:left;
-            margin-right:5px;
-            height:30px;
+        .edit {
+            background-color: #555769;
+            color: #FFF;
+            padding: 20px 90px;
+            width: 350px;
+            border-radius: 50px;
+            position: absolute;
+            margin-left: 490px;
+            margin-top: 20px;
+            height:650px;
 
         }
-        select{
-            margin-bottom:10px;
-            border-radius:10px;
-            width:120px;
+        label {
+            float: left;
+            margin-right: 5px;
+            height: 30px;
+            color: white;
         }
-        input{
-            border-radius:10px;
-            height:20px;
-            margin-bottom:12px;
+        select, input[type="date"], input[type="time"]  {
+            margin-bottom: 10px;
+            border-radius: 10px;
+            width: 120px;
             padding-left:5px;
-            border:none;
         }
-        h2{
-            padding-left:120px;
-            color:#1C1C1C;
-            margin-top:-10px;
+        input[type="color"]{
+            border-radius:10px;
+            width:50px;
+            margin-bottom:10px;
+            height:25px;
         }
-        .dis{
-            display:none;
-            background-color:#FFF;
-            border:1 px solid black;
-            color:#000;
-            width:350px;
-            border-radius:20px;
-            padding:10px;
-            top:50px;
-            left:50px;
+        input[type="text"] {
+            border-radius: 10px;
+            height: 20px;
+            margin-bottom: 12px;
+            padding-left: 5px;
+            border: none;
         }
-        .lab{
-            margin-left:-90px;
+        h2 {
+            margin-left:130px;
+            color: #1E1E1F;
+            margin-top: -10px;
+        }
+        h3 {
+            color: white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+        }
+        .modal-buttons {
+        }
+        textarea{
+            border-radius:15px;
+            height:100px;
+            width:250px;
         }
     </style>
 </head>
 <body>
-<div class="edit">
-    <img hspace="130px" src="{% static 'events/img/image_2024-04-29_11-20-12.png' %}" alt="pict" width="110px">
-    <h2>TimeTracer</h2>
-    <h3>Добавить событие:</h3>
-    <form id="event-form" method="POST">
-        {% csrf_token %}
-        <label for="id_name">Название:</label>
-        {{ form.name }}
-        <br>
-        <label for="id_date_start">Дата начала:</label>
-        <input type="date" id="id_date_start" name="date_start">
-        <br>
-        <label for="id_time_start">Время начала:</label>
-        <input type="time" id="id_time_start" name="time_start">
-        <br>
-        <label for="id_date_finish">Дата окончания:</label>
-        <input type="date" id="id_date_finish" name="date_finish">
-        <br>
-        <label for="id_time_finish">Время окончания:</label>
-        <input type="time" id="id_time_finish" name="time_finish">
-        <br>
-        <label for="id_color">Color:</label>
-        <input type="color" id="id_color" name="color">
-        <br>
-        <label for="id_periodicity">Повторения:</label>
-        {{ form.periodicity }}
-        <br>
-        <label class="lab" for="id_end_date">Окончание повторений:</label>
-        <input type="date" id="id_end_date" name="end_date">
-        <br>
-        <label for="id_description">Описание:</label>
-        {{ form.description }}
-        <br>
-        <button type="button" id="generate-description-button" name="description">Добавить описание ИИ</button>
-
-
-        <button type="submit" name="save_button">Добавить событие</button>
-    </form>
+    <div class="edit">
+        <img hspace="130px" src="{% static 'events/img/image_2024-04-29_11-20-12.png' %}" alt="pict" width="110px">
+        <h2>TimeTracer</h2>
+        <h3>Добавить событие:</h3>
+        <form id="event-form" method="POST">
+            {% csrf_token %}
+            <label for="id_name">Название:</label>
+            {{ form.name }}
+            <br>
+            <label for="id_date_start">Дата начала:</label>
+            <input type="date" id="id_date_start" name="date_start">
+            <br>
+            <label for="id_time_start">Время начала:</label>
+            <input type="time" id="id_time_start" name="time_start">
+            <br>
+            <label for="id_date_finish">Дата окончания:</label>
+            <input type="date" id="id_date_finish" name="date_finish">
+            <br>
+            <label for="id_time_finish">Время окончания:</label>
+            <input type="time" id="id_time_finish" name="time_finish">
+            <br>
+            <label for="id_color">Color:</label>
+            <input type="color" id="id_color" name="color">
+            <br>
+            <label for="id_periodicity">Повторения:</label>
+            {{ form.periodicity }}
+            <br>
+            <label style="margin-left:-91px;" for="id_end_date">Окончание повторений:</label>
+            <input type="date" id="id_end_date" name="end_date">
+            <br>
+            <label for="id_description">Описание:</label>
+            {{ form.description }}
+            <br>
+            <button type="button" id="generate-description-button" name="description">Добавить описание ИИ</button>
+            <button type="submit" name="save_button">Добавить событие</button>
+        </form>
     </div>
-    <div id="description_suggestion" class="dis">
+    <div id="description-modal" class="modal">
+        <div class="modal-content">
             <h4>Предложенное описание:</h4>
             <p id="generated-description"></p>
-            <button type="button" id="accept-description-button">Согласиться</button>
+            <div class="modal-buttons">
+                <button type="button" id="accept-description-button">Согласиться</button>
+                <button type="button" id="reject-description-button">Отказаться</button>
+            </div>
         </div>
-    <!--Реализация получения ответа гигачата-->
+    </div>
     <script>
         $(document).ready(function() {
+            const modal = $('#description-modal');
+
             $('#generate-description-button').click(function() {
                 const eventName = $('#id_name').val();
                 if (eventName) {
@@ -131,7 +159,7 @@
                         },
                         success: function(response) {
                             $('#generated-description').text(response.description);
-                            $('#description_suggestion').show();
+                            modal.show();
                         },
                         error: function(xhr, status, error) {
                             alert('Ошибка при генерации описания');
@@ -142,12 +170,22 @@
                 }
             });
 
+            $('#reject-description-button').click(function() {
+                modal.hide();
+            });
+
+            $(window).click(function(event) {
+                if (event.target.id === 'description-modal') {
+                    modal.hide();
+                }
+            });
+
             $('#accept-description-button').click(function() {
                 const generatedDescription = $('#generated-description').text();
                 $('textarea[name="description"]').val(generatedDescription);
+                modal.hide();
             });
         });
     </script>
-
 </body>
 </html>

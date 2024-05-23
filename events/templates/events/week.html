@@ -331,7 +331,7 @@
         <tbody class="tbody">
             <tr>
                 {% for hour in hours %}
-                    <td valign="bottom" class="time">
+                    <td valign="top" class="time">
                         {% if hour %}
                             {{ hour.time }}
                         {% endif %}
@@ -341,10 +341,9 @@
                         {% for event in events %}
                             {% if day.date == event.date_start and hour.hour == event.time_start.hour %}
                                 <div class="event" data-title="{{ event.description }}">
-
-                                    <div class="dis">
+                                    <div class="dis" style="background-color: {{ event.color }};">
                                         <a href="{% url 'edit_event' event.id %}"
-                                           id="col{{ event.id }}" style="background-color: {{ event.color }};">
+                                           id="col{{ event.id }}">
                                                 {{ event.name }}
                                         </a>
                                     </div>

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Event
+from events.models import Event
 
 class EventForm(forms.ModelForm):
     PERIODICITY_CHOICES = [
@@ -18,7 +18,7 @@ class EventForm(forms.ModelForm):
 
     end_date = forms.DateField(
         required=False,
-        widget=forms.DateInput(attrs={'class': 'datepicker'}),
+        widget=forms.DateInput(attrs={'type': 'date'}),
         label='Конечная дата'
     )
 
@@ -43,6 +43,7 @@ class EventForm(forms.ModelForm):
             self.add_error('end_date', 'Это поле обязательно для выбранной периодичности.')
 
         return cleaned_data
+
 
 TYPES = (
     ('month', 'month'),

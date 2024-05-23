@@ -61,9 +61,8 @@ def week_view(request, select_week, selected_month, selected_year):
     week_counter = len(days_of_month)
     options = [{'value': f'{number + 1}', 'label': f'{number + 1}'} for number in range(week_counter)]
 
-    hours_str = [f"{hour:02d}:00" for hour in range(1, 24)]
-    hours_str.append('00:00')
-    hours = [datetime.strptime(i, '%H:%M') for i in hours_str]
+    hours_str = ['00:00'] + [f"{hour:02d}:00" for hour in range(1, 24)]
+    hours = [datetime.strptime(hour, '%H:%M') for hour in hours_str]
 
     notification = Notification.objects.filter(user=request.user)
     events = Event.objects.filter(
@@ -342,8 +341,8 @@ def day(request):
                                   user=request.user)
     month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август',
                    'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
-    hours_str = [f"{hour:02d}:00" for hour in range(1, 24)]
-    hours_str.append('00:00')
+
+    hours_str =['00:00'] + [f"{hour:02d}:00" for hour in range(1, 24)]
     hours = [datetime.strptime(hour, '%H:%M') for hour in hours_str]
 
     notification = Notification.objects.filter(user=request.user)

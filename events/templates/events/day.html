@@ -254,9 +254,17 @@
     <form name="day_selection" method="POST">
         {% csrf_token %}
         {{ form_day.as_p }}
-        <button class="exit" type="submit" name="select_day"
-                style="width:180px;margin-bottom:20px;">Выбрать</button>
+        <button class="exit" type="submit" name="select_day" style="width:180px;margin-bottom:20px;">Выбрать</button>
     </form>
+    <script>
+            // Находим все поля формы с атрибутом name="selected_month" и устанавливаем значение
+    document.querySelectorAll('input[name="selected_month"]').forEach(function(input) {
+        input.value = month;
+    });
+    </script>
+
+
+
     <!-- вот реализация добавления события-->
     <div style="border-top:1px solid grey;width:210px;">
     <form method="GET">
@@ -271,22 +279,22 @@
         <thead class="thead">
             <tr>
                 <th></th>
-                <th valign="left">{{ current_day }}</th>
+                <th valign="left">{{ selected_day }}</th>
             </tr>
         </thead>
         <tbody class="tbody">
             {% for hour in hours %}
             <tr>
-                <td valign="bottom" class="time">{{ hour.time }}</td>
+                <td valign="top" class="time">{{ hour.time }}</td>
                 <td>
                     {% for event in events %}
                         {% if selected_day == event.date_start.day and month == event.date_start.month %}
                             {% if selected_year == event.date_start.year and hour.hour == event.time_start.hour %}
                                 <div class="event" data-title="{{ event.description }}">
-                                    <div class="dis">
+                                    <div class="dis" style="background-color: {{ event.color }};">
                                         <a href="{% url 'edit_event' event.id %}"
-                                           id="col{{ event.id }}" style="background-color: {{ event.color }};">
-                                                        {{ event.name }}
+                                           id="col{{ event.id }}">
+                                                {{ event.name }}
                                         </a>
                                     </div>
                                 </div>
