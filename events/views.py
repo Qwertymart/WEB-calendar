@@ -210,10 +210,13 @@ def events(request, view_type='month'):
     return render(request, 'events/events.html', context)
 
 
-def week(request):
-    selected_month = timezone.now().month
-    select_week = get_week_number_in_month(timezone.now())
-    selected_year = timezone.now().year
+def week(request, selected_month=None, selected_year=None, select_week=None):
+    if selected_year is None:
+        selected_year = timezone.now().year
+    if selected_month is None:
+        selected_month = timezone.now().month
+    if select_week is None:
+        select_week = get_week_number_in_month(timezone.now())
     view_type = 'week'
 
     if 'exit' in request.GET:
@@ -271,10 +274,13 @@ def week(request):
 
     return render(request, template_name, calendar_data)
 
-def day(request):
-    selected_month = timezone.now().month
-    selected_year = timezone.now().year
-    selected_day = timezone.now().day
+def day(request, selected_month=None, selected_year=None, selected_day=None):
+    if selected_day is None:
+        selected_day = timezone.now().day
+    if selected_month is None:
+        selected_month = timezone.now().month
+    if selected_year is None:
+        selected_year = timezone.now().year
     view_type = 'day'
 
     if 'exit' in request.GET:
