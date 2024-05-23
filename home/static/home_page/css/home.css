@@ -102,12 +102,11 @@ body {
 /*псевдокласс, красящий кнопку при наведении*/
 .link:hover{
     color: #8E7E14;
-    text-decoration: underline;
-    text-decoration-color: #8E7E14;
-    cursor: pointer;
+    text-decoration: none;
 }
 
 #undertext:hover, .string:hover {
     color: #8E7E14;
     cursor: default;
+    text-decoration: none;
 }

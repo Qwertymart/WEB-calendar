@@ -1,7 +1,5 @@
 from django import forms
-from django.forms.widgets import DateInput
 from .models import Event
-
 
 class EventForm(forms.ModelForm):
     PERIODICITY_CHOICES = [
@@ -29,10 +27,10 @@ class EventForm(forms.ModelForm):
         fields = ['name', 'date_start', 'time_start', 'date_finish', 'time_finish', 'description', 'color',
                   'periodicity', 'end_date']
         widgets = {
-            'date_start': forms.DateInput(attrs={'class': 'datepicker'}),
-            'time_start': forms.TimeInput(attrs={'class': 'timepicker'}),
-            'date_finish': forms.DateInput(attrs={'class': 'datepicker'}),
-            'time_finish': forms.TimeInput(attrs={'class': 'timepicker'}),
+            'date_start': forms.DateInput(attrs={'type': 'date'}),
+            'time_start': forms.TimeInput(attrs={'type': 'time'}),
+            'date_finish': forms.DateInput(attrs={'type': 'date'}),
+            'time_finish': forms.TimeInput(attrs={'type': 'time'}),
             'color': forms.TextInput(attrs={'type': 'color'}),
         }
 

@@ -9,23 +9,25 @@
 <body>
 <style>
     body{
-	background-color:#2F303A;
+	    background-color:#2F303A;
     }
-    div{
-	border-radius:30px;
-    }
-    button{
-	height:30px;
-	margin: 15px;}
     .field{
-	clear:both;
-	text-align:right;
-	line-height:25px;}
+        clear:both;
+        text-align:right;
+        line-height:25px;
+	}
     label{
-	float:left;
-	margin-left:80px;}
+        float:left;
+        margin-left:80px;
+	}
     input{
-	margin-right:100px;}
+	    margin-right:80px;
+        border-radius:10px;
+        border:none;
+        background-color:#BCBDBF;
+        padding-left:10px;
+        height:20px;
+	}
     .parent {
     	width: 100%;
     	height: 100%;
@@ -33,8 +35,7 @@
     	top: 0;
     	left: 0;
     	overflow: auto;
-   }
-
+    }
     .block {
     	width: 500px;
     	height: 600px;
@@ -44,24 +45,46 @@
     	bottom: 0;
     	left: 0;
     	margin: auto;
-	background-color:#FFF;
-	color:#000;
-	text-align:center;
-	float:left;
+        background-color:#FFF;
+        color:#000;
+        text-align:center;
+        float:left;
+        border-radius:30px;
     }
+    .ent{
+        border-radius:20px;
+        height:30px;
+        width:140px;
+        border:none;
+        color:#FFF;
+        background-color:#2F303A;
+        margin-top:20px;
+    }
+    .ram{
+        border-top:2px solid black;
+        width:430px;
+        margin-left:40px;
+        padding-bottom:30px;
+    }
+
 }
 </style>
     <div class="parent">
 	<div class='block'>
 		<img vspace="40px" hspace="50px" src="{% static 'users/img/photo_2024-03-29_21-03-46.jpg' %}" alt="Our pict" width="200px">
-		<h1> Вход </h1>
-    <form method='post'>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button style="background-color:#2F303A; color:#FFF" type="submit" >Войти</button>
-    	</form>
-
-</div>
-</div>
+        <div class="ram">
+            <div class="na">
+		    <h1> Вход </h1>
+                </div>
+            <form method='post'>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div style="border-bottom:2px solid black;width:250px;margin-left:90px;padding-bottom:20px;">
+                <button class="ent" type="submit" >Войти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
 </body>
 </html>

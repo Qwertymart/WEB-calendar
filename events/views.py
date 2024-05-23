@@ -354,7 +354,7 @@ def day(request):
         'selected_month': month[selected_month - 1],
         'month': selected_month,
         'selected_year': selected_year, 'days_of_month': days_of_month,
-        'current_day': selected_day,
+        'selected_day': selected_day,
         'hours': hours, 'notification': notification}
 
     return render(request, 'events/day.html', calendar_data)

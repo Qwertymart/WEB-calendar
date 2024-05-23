@@ -20,6 +20,8 @@
             height:50px;
             width:100hv;
             margin-left:200px;
+            display: flex;
+            justify-content: flex-end;
         }
         table {
             margin-top:15px;
@@ -85,13 +87,13 @@
         }
         /* 3 штучки дял открытия формы добавления события*/
         .open-button {
-          background-color: #555;
+          background-color: #606072;
           color: white;
           border: none;
           cursor: pointer;
           width: 200px;
           height:50px;
-          margin-top:35px;
+          margin-top:20px;
           border-radius:25px;
         }
         .open-button:hover{
@@ -163,7 +165,7 @@
         }
         .ok{
             display:inline-block;
-            margin-left:490px;
+            margin-right:300px;
         }
         .ex{
             border-radius:7px;
@@ -197,17 +199,16 @@
         </div>
     </div>
     <!-- для выбора отображения календаря-->
-    <div>
-    <h3>Выберите отображение</h3>
+    <div class="ok" style="margin-right:20px;">
     <form method="GET" id="viewForm">
         {% csrf_token %}
         <select name="view_type" id="viewSelect">
-            <option value="...">...</option>
-            <option value="month">month</option>
-            <option value="week">week</option>
-            <option value="day">day</option>
+            <option value="...">Выбери</option>
+            <option value="month">Месяц</option>
+            <option value="week">Неделя</option>
+            <option value="day">День</option>
         </select>
-        <br>
+
     </form>
     </div>
     <script>
@@ -215,14 +216,8 @@
         document.getElementById('viewForm').submit();
     });
     </script>
-    <!--текущая дата(я вообще хз, надо это или нет)-->
-    <div class="shapka">
-        {% if current_month and current_year %}
-            <h3 align="right">Сегодня {{ current_month }} {{ current_year }}</h3>
-        {% endif %}
-    </div>
     <!--Уведомления-->
-    <div class="ok" >
+    <div class="ok" style="margin-right:10px;">
         <button class="button" onclick="togglePopup()">Уведомления</button>
         <div class="popup" id="popup">
                 {% for not in notification %}
@@ -243,7 +238,7 @@
     </script>
     </div>
     <!--Для выхода-->
-    <div class="ok" style="margin-left:10px;">
+    <div class="ok" style="margin-right:20px;">
         <form method="GET">
             {% csrf_token %}
             <button  class="ex" type = "submit" value = "Exit" name="exit">Выйти</button>
@@ -259,44 +254,16 @@
     <form name="day_selection" method="POST">
         {% csrf_token %}
         {{ form_day.as_p }}
-        <button class="exit" type="submit" name="select_day" style="width:180px;">Выбрать</button>
+        <button class="exit" type="submit" name="select_day"
+                style="width:180px;margin-bottom:20px;">Выбрать</button>
     </form>
-    <div>
-    <h3>Выберите отображение</h3>
-    <form method="GET" id="viewForm">
-        {% csrf_token %}
-
-        <select name="view_type" id="viewSelect">
-            <option value="month">month</option>
-            <option value="week">week</option>
-            <option value="day">day</option>
-        </select>
-        <br>
-        <input class="exit" style="margin-top:8px; width:65px;" type="submit" value="Выбрать" name="view_button">
-    </form>
-    </div>
-
-    <script>
-    document.getElementById('viewSelect').addEventListener('change', function() {
-        document.getElementById('viewForm').submit();
-    });
-    </script>
     <!-- вот реализация добавления события-->
-    <div style="border-top:1px solid grey;">
+    <div style="border-top:1px solid grey;width:210px;">
     <form method="GET">
         {% csrf_token %}
         <button class="open-button" name="new_event" onclick="openFor()">Добавить событие</button>
     </form>
     </div>
-    <script>
-        function openFor() {
-          document.getElementById("myForm").style.display = "block";
-        }
-        function closeFor() {
-          document.getElementById("myForm").style.display = "none";
-        }
-    </script>
-
 </aside>
 <main>
     <!--вот тут уже для таблиц дня-->
@@ -313,8 +280,8 @@
                 <td valign="bottom" class="time">{{ hour.time }}</td>
                 <td>
                     {% for event in events %}
-                        {% if current_day == event.date_start.day and month == event.date_start.month %}
-                            {% if current_year == event.date_start.year and hour.time == event.time_start %}
+                        {% if selected_day == event.date_start.day and month == event.date_start.month %}
+                            {% if selected_year == event.date_start.year and hour.hour == event.time_start.hour %}
                                 <div class="event" data-title="{{ event.description }}">
                                     <div class="dis">
                                         <a href="{% url 'edit_event' event.id %}"
