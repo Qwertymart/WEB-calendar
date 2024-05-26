@@ -1,10 +1,298 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events</title>
+    <style>
+        @font-face {
+            font-family: 'IBMPlexSans-Medium';
+            src: url('/static/events/css/IBMPlexSans-Medium.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        body{
+            background-color:#2F303A;
+            color:#FFF;
+        }
+        aside{
+            height:200px;
+            width:230px;
+            float:left;
+            margin-top:-60px;
+        }
+        header{
+            height:50px;
+            width:100hv;
+            margin-left:200px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        table {
+            margin-top:15px;
+            border-collapse: collapse;
+            background-color:#3F414D;
+            border-radius:30px;
+            margin-left: 10px;
+            width:1270px;
+            font-family: 'IBMPlexSans-Medium', sans-serif;
+        }
+        /* 2 штучки для прокуртки таблицы недели(шапка остаётся на месте)*/
+        .thead{
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            font-size:20px;
+        }
+        .tbody{
+            overflow-y: auto;
+            height: 690px;
+        }
+        th, td {
+            color:#FFF;
+        }
+        td {
+            border: 1px solid black;
+            height:100px;
+        }
+        th{
+            background-color:#2F303A;
+            height:60px;
+            border-top:1px solid grey;
+        }
+        label{
+            color:#000;
+        }
+        /*2 штучки для отображения события в ячейке*/
+        .dis{
+            font-size: 25px;
+            padding-right:5px;
+            padding-left:5px;
+            margin-top:0px;
+            height:40px; width:1200px;
+            color:#FFF;
+            text-align:left;
+            border-radius:7px;
+            display:inline-block;
+            font-family: 'IBMPlexSans-Medium', sans-serif;
+        }
+        a{
+            text-decoration: none;
+            width:1200px;
+            color:#FFF;
+        }
+        /* 2 штучки дял открытия формы добавления события*/
+        .open-button {
+          background-color: #606072;
+          color: white;
+          border: none;
+          cursor: pointer;
+          width: 200px;
+          height:50px;
+          margin-top:20px;
+          border-radius:25px;
+          font-family: 'IBMPlexSans-Medium', sans-serif;
+        }
+        .open-button:hover{
+            background-color:#47495C;
+            transition: 0.7s;
+        }
+        /* 2 штучки, чтобы при наведении появлялось описание события */
+        .event{
+            color:#D8C26E;
+            height:40px;
+            width:1210px;
+            overflow:hidden;
+            padding:5px;
+        }
+        .event:hover::after {
+            content: attr(data-title); /* Выводим текст */
+            margin-top:40px; margin-left: -1200px;
+            width: 200px; height: 200px;
+            position: absolute;/* Положение подсказки */
+            z-index: 1; /* Отображаем подсказку поверх других элементов */
+            background-color:#2F3030; /* Полупрозрачный цвет фона */
+            font-size: 17px; /* Размер текста подсказки */
+            border: 1px solid #FFF; /* Параметры рамки */
+            color:#FFF;
+        }
+        /*3 штучки для уведомлений*/
+        .button {
+            width: 100px;
+            height: 25px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-family: 'IBMPlexSans-Medium', sans-serif;
+        }
+        .button:hover{
+            background-color:#47495C;
+            transition: 0.7s;
+        }
+        .popup {
+            overflow: auto;
+            display:none;
+            background-color: #FFF;
+            color:#000;
+            width: 170px; height:200px;
+            margin-left:-50px;
+            position: absolute;
+            border-radius:10px;
+            padding:10px;
+            z-index:2;
+        }
+        /*кнопочки*/
+        .exit{
+            border-radius:7px;
+            border:none;
+            width:65px;
+            height:25px;
+            font-family: 'IBMPlexSans-Medium', sans-serif;
+        }
+        .exit:hover{
+            background-color:#47495C;
+            transition: 0.7s;
+        }
+        select{
+            height: 25px;
+            border-radius:7px;
+            font-family: 'IBMPlexSans-Medium', sans-serif;
+        }
+        /*блоки в строку*/
+        .ok{
+            display:inline-block;
+            margin-right:300px;
+        }
+        /*ещё копочки*/
+        .ex{
+            border-radius:7px;
+            border:none;
+            width:70px;
+            height:25px;
+            background-color:#C41919;
+            font-family: 'IBMPlexSans-Medium', sans-serif;
+        }
+        .ex:hover{
+            background-color:#690707;
+            transition: 0.7s;
+        }
+        /*для удобного отображения шапки и левого столбика таблицы*/
+        .time{
+            border:none;
+            width:20px;
+            background-color:#2F303A;
+        }
+        .week{
+            border:none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hola! The day came!!!</h1>
+<header>
+    <!-- для выбора отображения календаря-->
+    <div class="ok" style="margin-right:10px;">
+    <form method="GET" id="viewForm">
+        {% csrf_token %}
+        <select style="width:160px;" name="view_type" id="viewSelect">
+            <option value="...">Выбери отображение</option>
+            <option value="month">Месяц</option>
+            <option value="week">Неделя</option>
+            <option value="day">День</option>
+        </select>
+    </form>
+    </div>
+    <script>
+    document.getElementById('viewSelect').addEventListener('change', function() {
+        document.getElementById('viewForm').submit();
+    });
+    </script>
+    <!--Уведомления-->
+    <div class="ok" style="margin-right:10px;">
+        <button class="button" onclick="togglePopup()">Уведомления</button>
+        <div class="popup" id="popup">
+                {% for not in notification %}
+                    <div class="not">
+                        {{ not.text }} {{ not.created_at }}
+                    </div>
+                {% endfor %}
+        </div>
+    <script>
+        function togglePopup() {
+            var popup = document.getElementById("popup");
+            if (popup.style.display === "none") {
+                popup.style.display = "block";
+            } else {
+                popup.style.display = "none";
+            }
+        }
+    </script>
+    </div>
+    <!--Для выхода-->
+    <div class="ok" style="margin-right:20px;">
+        <form method="GET">
+            {% csrf_token %}
+            <button  class="ex" type = "submit" value = "Exit" name="exit">Выйти</button>
+        </form>
+    </div>
+</header>
+<aside>
+    <div class="im">
+        <img src="{% static 'events/img/image_2024-04-29_11-20-12.png' %}" alt="pict" width="170px">
+    </div>
+    <!--для выбора даты для day-->
+    <h2>Выберите дату:</h2>
+    <form name="day_selection" method="POST">
+        {% csrf_token %}
+        {{ form_day.as_p }}
+        <button class="exit" type="submit" name="select_day" style="width:180px;margin-bottom:20px;">Выбрать</button>
+    </form>
+    <script>
+        document.querySelectorAll('input[name="selected_month"]').forEach(function(input) {
+            input.value = month;
+        });
+    </script>
+    <!-- вот реализация добавления события-->
+    <div style="border-top:1px solid grey;width:210px;">
+        <form method="GET">
+            {% csrf_token %}
+            <button class="open-button" name="new_event" onclick="openFor()">Добавить событие</button>
+        </form>
+    </div>
+</aside>
+<main>
+    <!--вот тут уже для таблиц дня-->
+    <table>
+        <thead class="thead">
+            <tr>
+                <th></th>
+                <th valign="left">{{ selected_day }} {{ selected_month }} {{ selected_year }}</th>
+            </tr>
+        </thead>
+        <tbody class="tbody">
+            {% for hour in hours %}
+            <tr>
+                <td valign="top" class="time">{{ hour.time }}</td>
+                <td>
+                    {% for event in events %}
+                        {% if selected_day == event.date_start.day and month == event.date_start.month %}
+                            {% if selected_year == event.date_start.year and hour.hour == event.time_start.hour %}
+                                <div class="event" data-title="{{ event.description }}">
+                                    <div class="dis" style="background-color: {{ event.color }};">
+                                        <a href="{% url 'edit_event' event.id %}"
+                                           id="col{{ event.id }}">
+                                                {{ event.name }}
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</main>
 </body>
 </html>

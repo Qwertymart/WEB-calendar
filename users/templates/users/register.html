@@ -1,9 +1,79 @@
-{% block content %}
-<h1>Регистрация</h1>
-
-<form method='post'>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <p><button type="submit">Регистрация</button></p>
-</form>
-{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+</head>
+<body>
+<style>
+    @font-face {
+            font-family: 'IBMPlexSans-Medium';
+            src: url('/static/events/css/IBMPlexSans-Medium.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+    body{
+	    background-color:#2F303A;
+	    font-family: 'IBMPlexSans-Medium', sans-serif;
+    }
+    label{
+        float:left;
+        margin-right:5px;
+        margin-left:50px;
+    }
+    input{
+        border-radius:10px;
+        border:none;
+        background-color:#BCBDBF;
+        padding-left:10px;
+        height:20px;
+    }
+    /*основной блок*/
+    .block {
+    	width: 500px;
+    	min-height:600px;
+    	margin:100px 500px;
+        background-color:#FFF;
+        color:#000;
+        overflow:visible;
+        border-radius:30px;
+    }
+    /*кнопочка*/
+    .ent{
+        border-radius:20px;
+        height:30px;
+        width:200px;
+        border:none;
+        color:#FFF;
+        background-color:#2F303A;
+        margin-top:10px;
+        margin-left:30px;
+        font-family: 'IBMPlexSans-Medium', sans-serif;
+    }
+    /*внутренний блок*/
+    .ram{
+        border-top:2px solid black;
+        width:430px;
+        margin-left:40px;
+        padding-bottom:30px;
+    }
+}
+</style>
+	<div class='block'>
+		<img vspace="20px" hspace="150px" src="{% static 'events/img/image_2024-04-29_11-20-12.png' %}"
+             alt="Our pict" width="200px">
+        <div class="ram">
+            <h1 style="text-align:center;"> Регистрация </h1>
+            <form method='post'>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div style="border-bottom:2px solid black;width:250px;margin-left:90px;padding-bottom:20px;">
+                <button class="ent" type="submit" >Зарегистрироваться</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

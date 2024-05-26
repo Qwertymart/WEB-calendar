@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редакция</title>
+    <style>
+        @font-face {
+            font-family: 'IBMPlexSans-Medium';
+            src: url('/static/events/css/IBMPlexSans-Medium.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        body {
+            background-color: #2F303A;
+        }
+        button {
+            background-color: #3A3C42;
+            border: none;
+            margin: 30px;
+            height: 45px;
+            width: 120px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+        }
+        /*основной блок*/
+        .edit {
+            background-color: #555769;
+            color: #FFF;
+            padding: 40px 90px;
+            width: 600px;
+            border-radius: 50px;
+            position: absolute;
+            margin-left: 490px;
+            margin-top: 20px;
+            box-sizing: border-box;
+            height:700px;
+        }
+        label {
+            float: left;
+            margin-right: 5px;
+            height: 30px;
+            color: white;
+        }
+        select, input[type="date"], input[type="time"]  {
+            margin-bottom: 10px;
+            border-radius: 10px;
+            width: 120px;
+            padding-left:5px;
+            height:20px;
+            border:none;
+        }
+        input[type="color"]{
+            border-radius:10px;
+            margin-bottom:10px;
+            border:none;
+        }
+        input[type="text"] {
+            border-radius:20px;
+            height: 20px;
+            margin-bottom: 12px;
+            padding-left: 5px;
+            border: none;
+        }
+        h2 {
+            margin-left:150px;
+            color: #1E1E1F;
+            margin-top: -10px;
+        }
+        h3 {
+            color: white;
+        }
+        textarea{
+            border-radius:15px;
+            height:90px;
+            width:200px;
+            padding:5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="edit">
+        <img hspace="150px" src="{% static 'events/img/image_2024-04-29_11-20-12.png' %}" alt="pict" width="110px">
+        <h2>TimeTracer</h2>
+        <h3>Измени данные события:</h3>
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_name">Название:</label>
+            <input type="text" name="name" id="id_name" value="{{ form.name.value }}"><br>
+
+            <label for="id_date_start">Дата начала:</label>
+            <input type="date" name="date_start" id="id_date_start" value="{{ event.date_start|date:'Y-m-d' }}"><br>
+
+            <label for="id_time_start">Время начала:</label>
+            <input type="time" name="time_start" id="id_time_start" value="{{ form.time_start.value }}"><br>
+
+            <label for="id_date_finish">Дата окончания:</label>
+            <input type="date" name="date_finish" id="id_date_finish" value="{{ event.date_finish|date:'Y-m-d' }}"><br>
+
+            <label for="id_time_finish">Время окончания:</label>
+            <input type="time" name="time_finish" id="id_time_finish" value="{{ form.time_finish.value }}"><br>
+
+            <label for="id_description">Описание:</label>
+            <textarea name="description" id="id_description">{{ form.description.value }}</textarea><br>
+
+            <label for="id_color">Цвет:</label>
+            <input type="color" name="color" id="id_color" value="{{ form.color.value }}"><br>
+
+            <label for="id_periodicity">Периодичность:</label>
+            <select name="periodicity" id="id_periodicity">
+                {% for value, label in form.periodicity.field.choices %}
+                    <option value="{{ value }}" {% if value == form.periodicity.value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select><br>
+
+            <label for="id_end_date">Конечная дата:</label>
+            <input type="date" name="end_date" id="id_end_date" value="{{ form.end_date.value|date:'Y-m-d' }}"><br>
+
+            <button type="submit" name="save">Изменить</button>
+            <button type="submit" name="delete">Удалить событие</button>
+        </form>
+    </div>
+</body>
+</html>
