@@ -19,7 +19,6 @@ Timetracer - это веб-приложение, разработанное дл
 
 - Python 3.12+
 - Django 4.0.4+
-- bcrypt 4.1.2+
 - langchain 0.1.19+
 - gigachain 0.1.17+
 - gigachain-cli 0.0.21+
@@ -56,3 +55,12 @@ Timetracer - это веб-приложение, разработанное дл
 ```bash
 python manage.py runserver
 ```
+
+##Подробнее о нашей работе
+
+Доска Miro с таймлайном, таск-трекером:
+https://miro.com/app/board/uXjVNqIUDdM=/
+
+Демонстрация работы сайта:
+https://github.com/Qwertymart/WEB-calendar/assets/90633832/de02f00a-0cc1-4d90-ad02-1f3f40192dd3
+
