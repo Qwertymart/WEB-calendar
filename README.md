@@ -19,7 +19,6 @@ Timetracer - это веб-приложение, разработанное дл
 
 - Python 3.12+
 - Django 4.0.4+
-- bcrypt 4.1.2+
 - langchain 0.1.19+
 - gigachain 0.1.17+
 - gigachain-cli 0.0.21+
