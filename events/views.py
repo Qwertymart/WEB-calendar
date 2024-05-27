@@ -18,7 +18,7 @@ chat = GigaChat(credentials=auth, verify_ssl_certs=False)
 
 messages = [
     SystemMessage(
-        content="Помогите пользователю написать краткое описание события на основе его названия."
+        content='Помогите пользователю написать краткое описание события на основе его названия.'
     )
 ]
 
@@ -68,7 +68,7 @@ def week_view(request, select_week, selected_month, selected_year):
     week_counter = len(days_of_month)
     options = [{'value': f'{number + 1}', 'label': f'{number + 1}'} for number in range(week_counter)]
 
-    hours_str = ['00:00'] + [f"{hour:02d}:00" for hour in range(1, 24)]
+    hours_str = ['00:00'] + [f'{hour:02d}:00' for hour in range(1, 24)]
     hours = [datetime.strptime(hour, '%H:%M') for hour in hours_str]
 
     notification = Notification.objects.filter(user=request.user)
@@ -95,6 +95,16 @@ def week_view(request, select_week, selected_month, selected_year):
 
 
 def events(request, view_type='month'):
+    """
+        Представление для отображения событий.
+
+        Args:
+            request (HttpRequest): Объект HTTP-запроса.
+            view_type (str, optional): Тип представления (month, week, day). По умолчанию 'month'.
+
+        Returns:
+            HttpResponse: HTTP-ответ с отображением событий.
+        """
     user_events = Event.objects.filter(user=request.user)
 
     for event in user_events:
@@ -107,11 +117,17 @@ def events(request, view_type='month'):
         if time_difference <= timedelta(hours=1) and time_difference.total_seconds() > 0:
             if not Notification.objects.filter(user=request.user, event=event).exists():
                 notification_time = event.date_start - timedelta(hours=1)
-                notification = Notification(user=request.user, text=f"Время начала события '{event.name}' через час",
+                notification = Notification(user=request.user, text=f'Время начала события "{event.name}" через час',
                                             created_at=notification_time, event=event)
                 notification.save()
 
     def month_view():
+        """
+                Отображение месяца.
+
+                Returns:
+                    Dict[str, Any]: Словарь, содержащий контекстные данные для отображения месяца.
+                """
         form = EventForm()
         current_year = timezone.now().year
         current_month = timezone.now().month
@@ -217,6 +233,18 @@ def events(request, view_type='month'):
 
 
 def week(request, selected_month=None, selected_year=None, select_week=None):
+    """
+        Представление для отображения недели.
+
+        Args:
+            request (HttpRequest): Объект HTTP-запроса.
+            selected_month (int, optional): Выбранный месяц. По умолчанию None.
+            selected_year (int, optional): Выбранный год. По умолчанию None.
+            select_week (int, optional): Выбранная неделя. По умолчанию None.
+
+        Returns:
+            HttpResponse: HTTP-ответ с отображением недели.
+        """
     if selected_year is None:
         selected_year = timezone.now().year
     if selected_month is None:
@@ -282,6 +310,18 @@ def week(request, selected_month=None, selected_year=None, select_week=None):
 
 
 def day(request, selected_month=None, selected_year=None, selected_day=None):
+    """
+       Представление для отображения дня.
+
+       Args:
+           request (HttpRequest): Объект HTTP-запроса.
+           selected_month (int, optional): Выбранный месяц. По умолчанию None.
+           selected_year (int, optional): Выбранный год. По умолчанию None.
+           selected_day (int, optional): Выбранный день. По умолчанию None.
+
+       Returns:
+           HttpResponse: HTTP-ответ с отображением дня.
+       """
     if selected_day is None:
         selected_day = timezone.now().day
     if selected_month is None:
@@ -356,7 +396,7 @@ def day(request, selected_month=None, selected_year=None, selected_day=None):
     month = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа',
              'Сентября', 'Октября', 'Ноября', 'Декабря']
 
-    hours_str = ['00:00'] + [f"{hour:02d}:00" for hour in range(1, 24)]
+    hours_str = ['00:00'] + [f'{hour:02d}:00' for hour in range(1, 24)]
     hours = [datetime.strptime(hour, '%H:%M') for hour in hours_str]
 
     notification = Notification.objects.filter(user=request.user)
@@ -375,6 +415,15 @@ def day(request, selected_month=None, selected_year=None, selected_day=None):
 
 @csrf_exempt
 def generate_description(request):
+    """
+        Представление для генерации описания события с помощью GigaChat.
+
+        Args:
+            request (HttpRequest): Объект HTTP-запроса.
+
+        Returns:
+            JsonResponse: JSON-ответ с сгенерированным описанием события.
+        """
     if request.method == 'POST':
         event_name = request.POST.get('name', None)
         messages.append(HumanMessage(content=event_name))
@@ -386,7 +435,16 @@ def generate_description(request):
 
 
 def new_event(request):
-    if request.method == "POST":
+    """
+       Представление для создания нового события.
+
+       Args:
+           request (HttpRequest): Объект HTTP-запроса.
+
+       Returns:
+           HttpResponse: HTTP-ответ с формой для создания нового события.
+       """
+    if request.method == 'POST':
         form = EventForm(request.POST)
         if form.is_valid():
             event = form.save(commit=False)
@@ -436,6 +494,15 @@ def new_event(request):
 
 
 def get_week_number_in_month(date):
+    """
+    Возвращает номер недели в месяце для указанной даты.
+
+    Args:
+        date (datetime): Дата для определения номера недели в месяце.
+
+    Returns:
+        int: Номер недели в месяце.
+    """
     first_day_of_month = date.replace(day=1)
     day_of_month = date.day
     week_number = (day_of_month + first_day_of_month.weekday()) // 7 + 1
@@ -444,24 +511,33 @@ def get_week_number_in_month(date):
 
 @csrf_protect
 def move_event(request):
-    if request.method == "POST":
-        event_id = request.POST.get("event_id")
-        new_date = request.POST.get("new_date")
+    """
+       Перемещает событие на указанную дату.
 
-        print("Event ID:", event_id)
-        print("New Date:", new_date)
+       Args:
+           request (HttpRequest): Запрос, содержащий данные о событии и новой дате.
+
+       Returns:
+           JsonResponse: JSON-ответ с результатом операции.
+       """
+    if request.method == 'POST':
+        event_id = request.POST.get('event_id')
+        new_date = request.POST.get('new_date')
+
+        print('Event ID:', event_id)
+        print('New Date:', new_date)
 
         try:
             event = Event.objects.get(id=event_id)
-            event.date_start = datetime.strptime(new_date, "%Y-%m-%d").date()
+            event.date_start = datetime.strptime(new_date, '%Y-%m-%d').date()
             event.date_finish = event.date_start  # если событие однодневное
             event.save()
-            print("Event updated:", event)  # Добавлено для отладки
+            print('Event updated:', event)  # Добавлено для отладки
             return JsonResponse({'status': 'success'})
         except Event.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Событие не найдено'})
         except Exception as e:
-            print("Error:", str(e))  # Добавлено для отладки
+            print('Error:', str(e))  # Добавлено для отладки
             return JsonResponse({'status': 'error', 'message': str(e)})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
