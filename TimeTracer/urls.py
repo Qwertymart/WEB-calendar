@@ -17,29 +17,28 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from home.views import home
-from events.views import events, week, day, week_view, new_event, generate_description, move_event
+from events.views import events, week, day, new_event, generate_description, move_event
 from event_editor.views import edit_event
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
-    #path('', day, name='day'),
+
     path('users/', include('users.urls', namespace='users')),
 
     # Маршрут для отображения календаря по умолчанию
+
     path('events/', events, {'view_type': 'month'}, name='events'),
     path('events/week/', week, name='week'),
     path('events/day/', day, name='day'),
     path('events/new_event/', new_event, name='new_event'),
     path('events/generate_description/', generate_description, name='generate_description'),
     path('events/day/<int:selected_year>/<int:selected_month>/<int:selected_day>/', day, name='day_selected_day'),
+
     # Дополнительные маршруты для обработки различных действий или типов отображения
-    # path('events/', events, name='month_calendar'),
-    # path('events/week/', events, {'view_type': 'week'}, name='week_calendar'),
+
     path('events/week/<int:selected_year>/<int:selected_month>/<int:select_week>/', week, name='week_calendar_selected_week'),
     path('event/<int:event_id>/edit/', edit_event, name='edit_event'),
     path('move_event/', move_event, name='move_event'),
 
-    #path('events/week/', week, name='week'),
-    #path('events/day/', day, name='day'),
 ]
