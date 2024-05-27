@@ -5,7 +5,7 @@ from events.forms import EventForm
 
 def edit_event(request, event_id):
     """
-        Редактирует событие.
+        Редактирует событие. Позволяет изменить все параметры события.
 
         Parameters
         ----------

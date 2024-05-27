@@ -25,7 +25,7 @@ messages = [
 
 def week_view(request, select_week, selected_month, selected_year):
     """
-        Функция представления для недельного отображениясобытий.
+        Функция представления для недельного отображения событий.
 
         Args:
             request (HttpRequest): Объект HTTP-запроса.
@@ -96,7 +96,9 @@ def week_view(request, select_week, selected_month, selected_year):
 
 def events(request, view_type='month'):
     """
-        Представление для отображения событий.
+        Представление для отображения событий в месячном виде. Реализовано добавление и редактирование событий.
+        Реализовано изменение даты события с помощью перетаскивания. Добавлены уведомления в качестве напоминий о
+        предстоящем событии. Также реализован выбор типа отображения календаря.
 
         Args:
             request (HttpRequest): Объект HTTP-запроса.
@@ -234,7 +236,8 @@ def events(request, view_type='month'):
 
 def week(request, selected_month=None, selected_year=None, select_week=None):
     """
-        Представление для отображения недели.
+        Представление для отображения недели. Реализован выбор недели месяца, добавление и редактирование события.
+        Также добавлен выбор типа отображения календаря.
 
         Args:
             request (HttpRequest): Объект HTTP-запроса.
@@ -311,7 +314,8 @@ def week(request, selected_month=None, selected_year=None, select_week=None):
 
 def day(request, selected_month=None, selected_year=None, selected_day=None):
     """
-       Представление для отображения дня.
+       Представление для отображения дня. Включает в себя выбор дня, добавление, редактирование события и
+        выбора типа отображения.
 
        Args:
            request (HttpRequest): Объект HTTP-запроса.
@@ -436,7 +440,8 @@ def generate_description(request):
 
 def new_event(request):
     """
-       Представление для создания нового события.
+       Представление для создания нового события, включающее в себя установку даты и вермени начала и окончания события,
+       периодичность, выбор цвета и поле описания с возможностью использования GigaChat.
 
        Args:
            request (HttpRequest): Объект HTTP-запроса.
