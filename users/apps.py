@@ -2,7 +2,7 @@ from django.apps import AppConfig
 
 
 class UsersConfig(AppConfig):
-    '''
+    """
         Конфигурация приложения пользователей.
 
         Attributes
@@ -11,6 +11,6 @@ class UsersConfig(AppConfig):
             Тип поля для автоматического увеличения идентификатора.
         name : str
             Имя приложения.
-        '''
+        """
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'users'

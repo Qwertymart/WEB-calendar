@@ -1,14 +1,13 @@
 # views.py
 from django.shortcuts import render, redirect
-from .forms import EventForm, ViewTypeForm, YEARS, DateSelectionForm
+from .forms import EventForm, DateSelectionForm
 from .models import Event as Event
 from .models import Notification
 from django.utils import timezone
 from datetime import datetime, timedelta
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from calendar import monthrange
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from django.views.decorators.http import require_POST
 
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.chat_models.gigachat import GigaChat
@@ -25,6 +24,18 @@ messages = [
 
 
 def week_view(request, select_week, selected_month, selected_year):
+    """
+        Функция представления для недельного отображениясобытий.
+
+        Args:
+            request (HttpRequest): Объект HTTP-запроса.
+            select_week (int): Выбранный номер недели.
+            selected_month (int): Выбранный номер месяца.
+            selected_year (int): Выбранный номер года.
+
+        Returns:
+            Dict[str, Any]: Словарь, содержащий контекстные данные для недельного отображения.
+        """
     form = EventForm()
     if request.method == 'GET':
         # Проверка на передачу года, месяца и недели
@@ -35,10 +46,6 @@ def week_view(request, select_week, selected_month, selected_year):
         selected_month = int(selected_month)
         selected_year = int(selected_year)
         selected_week = int(select_week)
-
-    for value in YEARS:
-        if value[1] == str(selected_year):
-            name = value
 
     first_weekday, num_days = monthrange(selected_year, selected_month)
     num_padding_days = (first_weekday) % 7
@@ -57,7 +64,7 @@ def week_view(request, select_week, selected_month, selected_year):
         days_of_month.append(week_of_month)
 
     current_week = days_of_month[int(selected_week) - 1] if 1 <= int(selected_week) <= len(days_of_month) else \
-    days_of_month[0]
+        days_of_month[0]
     week_counter = len(days_of_month)
     options = [{'value': f'{number + 1}', 'label': f'{number + 1}'} for number in range(week_counter)]
 
@@ -88,7 +95,6 @@ def week_view(request, select_week, selected_month, selected_year):
 
 
 def events(request, view_type='month'):
-
     user_events = Event.objects.filter(user=request.user)
 
     for event in user_events:
@@ -156,12 +162,13 @@ def events(request, view_type='month'):
             event_id = request.POST.get('delete_event_id')
             event = Event.objects.get(id=event_id)
             event.delete()  # Удаляем событие
-            return redirect('/events')  # Перенаправляем обратно на страницу событий после удалени
-            # я
+            return redirect('/events')  # Перенаправляем обратно на страницу событий после удаления
+
         elif 'new_event' in request.GET:
             return redirect('/new_event')
 
-    else:  # else для method GET
+    # else для method GET
+    else:
         view_type = request.GET.get('view_type', view_type)
         if view_type == 'week':
             return redirect('week')
@@ -273,6 +280,7 @@ def week(request, selected_month=None, selected_year=None, select_week=None):
 
     return render(request, template_name, calendar_data)
 
+
 def day(request, selected_month=None, selected_year=None, selected_day=None):
     if selected_day is None:
         selected_day = timezone.now().day
@@ -288,7 +296,8 @@ def day(request, selected_month=None, selected_year=None, selected_day=None):
         return redirect('/events/new_event')
 
     if request.method == 'POST':
-        form_day = DateSelectionForm(request.POST, initial={'selected_date': f'{selected_year}-{selected_month}-{selected_day}'})
+        form_day = DateSelectionForm(request.POST,
+                                     initial={'selected_date': f'{selected_year}-{selected_month}-{selected_day}'})
         if form_day.is_valid():
             selected_date = form_day.cleaned_data['selected_date']
             selected_year = selected_date.year or selected_year
@@ -325,7 +334,6 @@ def day(request, selected_month=None, selected_year=None, selected_day=None):
         elif view_type == 'month':
             return redirect('events')
 
-
     first_weekday, num_days = monthrange(selected_year, selected_month)
     num_padding_days = (first_weekday) % 7
     days_of_month = []
@@ -346,9 +354,9 @@ def day(request, selected_month=None, selected_year=None, selected_day=None):
                                   date_start__month=selected_month,
                                   user=request.user)
     month = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа',
-                   'Сентября', 'Октября', 'Ноября', 'Декабря']
+             'Сентября', 'Октября', 'Ноября', 'Декабря']
 
-    hours_str =['00:00'] + [f"{hour:02d}:00" for hour in range(1, 24)]
+    hours_str = ['00:00'] + [f"{hour:02d}:00" for hour in range(1, 24)]
     hours = [datetime.strptime(hour, '%H:%M') for hour in hours_str]
 
     notification = Notification.objects.filter(user=request.user)
@@ -364,9 +372,10 @@ def day(request, selected_month=None, selected_year=None, selected_day=None):
 
     return render(request, 'events/day.html', calendar_data)
 
+
 @csrf_exempt
 def generate_description(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         event_name = request.POST.get('name', None)
         messages.append(HumanMessage(content=event_name))
         res = chat(messages)
@@ -374,6 +383,7 @@ def generate_description(request):
         description_event = res.content
         return JsonResponse({'description': description_event})
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
 
 def new_event(request):
     if request.method == "POST":
@@ -430,6 +440,7 @@ def get_week_number_in_month(date):
     day_of_month = date.day
     week_number = (day_of_month + first_day_of_month.weekday()) // 7 + 1
     return week_number
+
 
 @csrf_protect
 def move_event(request):
