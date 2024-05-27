@@ -64,3 +64,7 @@ https://miro.com/app/board/uXjVNqIUDdM=/
 Демонстрация работы сайта:
 https://github.com/Qwertymart/WEB-calendar/assets/90633832/de02f00a-0cc1-4d90-ad02-1f3f40192dd3
 
+Презентация проекта:
+[WEB-calendar_Лапин_Д.А.pptx](https://github.com/Qwertymart/WEB-calendar/files/15457363/WEB-calendar_._.pptx)
+
+
