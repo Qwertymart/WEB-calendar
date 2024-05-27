@@ -28,10 +28,11 @@ class EventForm(forms.ModelForm):
                   'periodicity', 'end_date']
         widgets = {
             'date_start': forms.DateInput(attrs={'type': 'date'}),
-            'time_start': forms.TimeInput(attrs={'type': 'time'}),
+            'time_start': forms.TimeInput(format='%H:%M', attrs={'type': 'time'}),
             'date_finish': forms.DateInput(attrs={'type': 'date'}),
-            'time_finish': forms.TimeInput(attrs={'type': 'time'}),
+            'time_finish': forms.TimeInput(format='%H:%M', attrs={'type': 'time'}),
             'color': forms.TextInput(attrs={'type': 'color'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
         }
 
     def clean(self):

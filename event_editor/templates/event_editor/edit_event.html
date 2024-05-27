@@ -25,7 +25,6 @@
             cursor: pointer;
             color: white;
         }
-        /*основной блок*/
         .edit {
             background-color: #555769;
             color: #FFF;
@@ -44,7 +43,7 @@
             height: 30px;
             color: white;
         }
-        select, input[type="date"], input[type="time"]  {
+        select, input[type="date"], input[type="time"] {
             margin-bottom: 10px;
             border-radius: 10px;
             width: 120px;
@@ -52,7 +51,7 @@
             height:20px;
             border:none;
         }
-        input[type="color"]{
+        input[type="color"] {
             border-radius:10px;
             margin-bottom:10px;
             border:none;
@@ -72,7 +71,7 @@
         h3 {
             color: white;
         }
-        textarea{
+        textarea {
             border-radius:15px;
             height:90px;
             width:200px;
@@ -107,16 +106,6 @@
 
             <label for="id_color">Цвет:</label>
             <input type="color" name="color" id="id_color" value="{{ form.color.value }}"><br>
-
-            <label for="id_periodicity">Периодичность:</label>
-            <select name="periodicity" id="id_periodicity">
-                {% for value, label in form.periodicity.field.choices %}
-                    <option value="{{ value }}" {% if value == form.periodicity.value %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select><br>
-
-            <label for="id_end_date">Конечная дата:</label>
-            <input type="date" name="end_date" id="id_end_date" value="{{ form.end_date.value|date:'Y-m-d' }}"><br>
 
             <button type="submit" name="save">Изменить</button>
             <button type="submit" name="delete">Удалить событие</button>
