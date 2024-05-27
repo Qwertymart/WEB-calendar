@@ -55,3 +55,8 @@ Timetracer - это веб-приложение, разработанное дл
 ```bash
 python manage.py runserver
 ```
+
+##Подробнее о нашей работе
+
+Доска Miro с таймлайном, таск-трекером:
+https://miro.com/app/board/uXjVNqIUDdM=/
